@@ -18,9 +18,11 @@ class SeleniumMiddleware(object):
         self.vro_dashboard_area = (By.XPATH, "//div[@class='dash-area']")
         self.vro_workflow_item_area = (By.XPATH, "//div[@class='card-title dont-break-out']")
         self.vro_loading_center_spinner = (By.XPATH, "//div[@class='center-spinner']")
-        self.vro_tree_library_position = (By.XPATH, "//*[contains(text(), ' Library ')]")
+        self.vro_tree_library_position = (By.XPATH, "//*[contains(text(), 'Library')]")
         self.vro_tree_workflows_position = (By.XPATH, "//*[contains(text(), ' Workflows ')]")
         self.vro_tree_node = (By.TAG_NAME, "tree-node")
+        self.vro_clr_icon = (By.TAG_NAME, "clr-icon")
+        
 
     def process_request_with_selenium(self, request, browser):
         self.explicit_wait = WebDriverWait(browser, 120)
@@ -38,18 +40,32 @@ class SeleniumMiddleware(object):
         self.explicit_wait.until(EC.visibility_of_element_located(self.tree_view_icon))
         browser.find_element(*self.tree_view_icon).click()
         self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
-        time.sleep(3)
-        eles = browser.find_elements(*self.vro_tree_library_position)
-        print("DTEST " + str(len(eles)))
-        self.library_node = None
+        time.sleep(5)
+        eles = browser.find_elements(*self.vro_tree_node)
         for ele in eles:
-            print("DTEST FOUND ONE")
-            print(ele)
-            if ele.find_element(*self.vro_tree_library_position) != None:
-                print("DTEST FOUND A ONE")
-                if ele.find_element(*self.vro_tree_workflows_position) != None:
-                    print("DTEST FOUND THE REAL ONE")
-                    self.library_node = ele
+            if (ele.text == "Library"):
+                ele.find_element(*self.expand_btn).click()
+                library_node = ele
+                print("DTEST clicked")
+        time.sleep(3)
+        library_eles = library_node.find_elements(*self.vro_tree_node)
+        for ele in library_eles:
+            if (ele.text.find("Dell EMC PowerScale") != -1):
+                ele.find_element(*self.expand_btn).click()
+                powerscale_node = ele
+        time.sleep(3)
+        powerscale_eles = powerscale_node.find_elements(*self.vro_tree_node)
+        for ele in powerscale_eles:
+            print(ele.text)
+            ele.find_element(*self.expand_btn).click()
+            time.sleep(2)
+            y_node = ele
+            y_eles = y_node.find_elements(*self.vro_tree_node)
+            for y_ele in y_eles:
+                print(" " + y_ele.text)
+            # ele.find_element(*self.vro_clr_icon).click()
+            # if ele.find_element(*self.vro_tree_library_position) != None:
+                #print(ele.find_element(*self.vro_tree_library_position).text)
                     # self.library_node.find_element(*self.expand_btn).click()
                     # eles_new = browser.find_elements(*self.vro_tree_workflows_position)
                     # print("DTEST " + str(len(eles_new)))

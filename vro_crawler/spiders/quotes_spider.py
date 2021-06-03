@@ -14,12 +14,9 @@ class QuotesSpider(scrapy.Spider):
 
     def start_requests(self):
         vshere_obj = VSphereOperations()
-        session = vshere_obj.vsphere_login('10.225.6.65', 'Administrator@vsphere.local', 'Password123!')
-        # url = 'https://vpi167.pie.lab.emc.com/orchestration-ui/#/workflow'
-        url = 'https://vpi167.pie.lab.emc.com/orchestration-ui/#/workflow?query=@tags:Dell_EMC'
-        # splash_meta = {'splash': {'endpoint': 'execute', 'args': {'wait': 5, 'lua_source': self.script}}}
-        # yield scrapy.Request(url=url, callback=self.parse, cookies=session.cookies)
-        request = scrapy.Request(url=url, cookies=session.cookies)
+        # session = vshere_obj.vsphere_login('10.225.6.65', 'Administrator@vsphere.local', 'Password123!')
+        url = 'https://vpi163.pie.lab.emc.com/orchestration-ui/#/workflow?query=@tags:Dell_EMC'
+        request = scrapy.Request(url=url)
         selenium_middleware_obj = SeleniumMiddleware()
         response = selenium_middleware_obj.process_request_with_selenium(request, self.browser)
         self.parse(response)
