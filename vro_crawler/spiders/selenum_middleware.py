@@ -22,7 +22,10 @@ class SeleniumMiddleware(object):
         self.vro_tree_workflows_position = (By.XPATH, "//*[contains(text(), ' Workflows ')]")
         self.vro_tree_node = (By.TAG_NAME, "tree-node")
         self.vro_clr_icon = (By.TAG_NAME, "clr-icon")
-        
+        self.treenode_link = (By.CLASS_NAME, "clr-treenode-link")
+        self.workflow_run_button = (By.ID, "wfEditorBtnRun")
+        self.workflow_content = (By.TAG_NAME, "cf-renderer-main")
+        self.vro_data_loading_spinner = (By.XPATH, "//div[@class='spinner-inline']")
 
     def process_request_with_selenium(self, request, browser):
         self.explicit_wait = WebDriverWait(browser, 120)
@@ -63,10 +66,13 @@ class SeleniumMiddleware(object):
             y_eles = y_node.find_elements(*self.vro_tree_node)
             for y_ele in y_eles:
                 print(" " + y_ele.text)
-            # ele.find_element(*self.vro_clr_icon).click()
-            # if ele.find_element(*self.vro_tree_library_position) != None:
-                #print(ele.find_element(*self.vro_tree_library_position).text)
-                    # self.library_node.find_element(*self.expand_btn).click()
-                    # eles_new = browser.find_elements(*self.vro_tree_workflows_position)
-                    # print("DTEST " + str(len(eles_new)))
-        return HtmlResponse(url=browser.current_url, body=browser.page_source, encoding="utf-8", request=request)
+                y_ele.find_element(*self.treenode_link).click()
+                time.sleep(0.5)
+                chosen_workflow_node = y_ele
+        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
+        time.sleep(2)
+        browser.find_element(*self.workflow_run_button).click()
+        time.sleep(6)
+        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_data_loading_spinner))
+        workflow_content = browser.find_elements(*self.workflow_content)[0]
+        return HtmlResponse(url=browser.current_url, body=workflow_content.get_attribute("outerHTML"), encoding="utf-8", request=request)

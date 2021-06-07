@@ -16,7 +16,7 @@ class TranverseTreeView:
     def next(self):
         # Find the first next node
         self.tree_node.find_elements_by_tag_name("tree-node")
-        self.tree_node.find_element_by_id
+        self.tree_node.get_attribute("outerHTML")
 
     def pop(self):
         self.tree_node = self.tree_stack.pop()
