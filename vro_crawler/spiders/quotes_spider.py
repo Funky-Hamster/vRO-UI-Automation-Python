@@ -19,7 +19,7 @@ class QuotesSpider(scrapy.Spider):
         request = scrapy.Request(url=url)
         selenium_middleware_obj = SeleniumMiddleware()
         response = selenium_middleware_obj.process_request_with_selenium(request, self.browser)
-        print("DTEST" + str(response.body) + "DTEST BODY ENDS")
+        # print("DTEST" + str(response.body) + "DTEST BODY ENDS")
         self.parse(response)
         # yield request
 
