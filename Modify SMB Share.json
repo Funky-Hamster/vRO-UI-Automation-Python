@@ -1,0 +1,171 @@
+{
+    "workflows": [
+        {
+            "name": "Modify SMB Share",
+            "content": {
+                "tabs": [
+                    {
+                        "name": "General",
+                        "content": [
+                            {
+                                "label": "Cluster",
+                                "id": "clusterName",
+                                "type": "dropdown"
+                            },
+                            {
+                                "label": "Access zone",
+                                "id": "zone",
+                                "type": "dropdown"
+                            },
+                            {
+                                "label": "SMB share",
+                                "id": "name",
+                                "type": "dropdown"
+                            },
+                            {
+                                "label": "SMB share object",
+                                "id": "smbShareObj",
+                                "type": "value-picker"
+                            },
+                            {
+                                "label": "Name",
+                                "id": "newSmbShareName",
+                                "type": "text-field"
+                            },
+                            {
+                                "label": "Description",
+                                "id": "description",
+                                "type": "text-field"
+                            },
+                            {
+                                "label": "Path",
+                                "id": "path",
+                                "type": "text-field"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Directory ACLs",
+                        "content": [
+                            {
+                                "label": "Directory ACLs",
+                                "id": "dirACL",
+                                "type": "dropdown"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Home directory provisioning",
+                        "content": [
+                            {
+                                "label": "Allow variable expansion",
+                                "id": "allowVarExp",
+                                "type": "checkbox"
+                            },
+                            {
+                                "label": "Auto-create directories",
+                                "id": "autoCreateDir",
+                                "type": "checkbox"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Continuous Availability",
+                        "content": [
+                            {
+                                "label": "Continuous Availability (non-editable)",
+                                "id": "enableContinuousAvailability",
+                                "type": "text-field"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Members",
+                        "content": [
+                            {
+                                "label": " Read-only users ",
+                                "id": "roUsers",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Read-write users ",
+                                "id": "rwUsers",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Full control users ",
+                                "id": "fcUsers",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Root users ",
+                                "id": "rtUsers",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Read-only groups ",
+                                "id": "roGroups",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Read-write groups ",
+                                "id": "rwGroups",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Full control groups ",
+                                "id": "fcGroups",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Root groups ",
+                                "id": "rtGroups",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Read-only well-known SIDs ",
+                                "id": "roWellknowns",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Read-write well-known SIDs ",
+                                "id": "rwWellknowns",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Full control well-known SIDs ",
+                                "id": "fcWellknowns",
+                                "type": "datagrid"
+                            },
+                            {
+                                "label": " Root well-known SIDs ",
+                                "id": "rtWellknowns",
+                                "type": "datagrid"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "File Filter",
+                        "content": [
+                            {
+                                "label": "Enable file filters",
+                                "id": "enableFileFilters",
+                                "type": "checkbox"
+                            },
+                            {
+                                "label": "File filter type",
+                                "id": "fileFilterType",
+                                "type": "dropdown"
+                            },
+                            {
+                                "label": " File Filter Extensions ",
+                                "id": "fileFilterExtensions",
+                                "type": "datagrid"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

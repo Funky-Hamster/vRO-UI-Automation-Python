@@ -1,5 +1,6 @@
 from selenium.common.exceptions import TimeoutException
 import time
+import json
 from scrapy.http.response.html import HtmlResponse
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -70,6 +71,7 @@ class SeleniumMiddleware(object):
                 powerscale_node = ele
         time.sleep(3)
         powerscale_eles = powerscale_node.find_elements(*self.vro_tree_node)
+        workflow_name = "test"
         for ele in powerscale_eles:
             print(ele.text)
             ele.find_element(*self.expand_btn).click()
@@ -81,6 +83,7 @@ class SeleniumMiddleware(object):
                 y_ele.find_element(*self.treenode_link).click()
                 time.sleep(0.5)
                 chosen_workflow_node = y_ele
+                workflow_name = chosen_workflow_node.text
         self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
         time.sleep(2)
         browser.find_element(*self.workflow_run_button).click()
@@ -89,32 +92,29 @@ class SeleniumMiddleware(object):
         workflow_content = browser.find_elements(*self.workflow_content)[0]
         tabs = workflow_content.find_elements(*self.vro_ul)[0].find_elements(*self.vro_li)
         tab_pages = workflow_content.find_elements(*self.vro_tab_page)
-        workflow_struct = dict()
+        workflow_content_struct = dict()
+        workflow_content_struct["tabs"] = []
         for i in range(len(tabs)):
-            page_dict = dict()
+            page_array = []
             page_sections = tab_pages[i].find_elements(*self.vro_section)
             for section in page_sections:
                 cf_potentials = section.find_elements(*self.vro_ng_star_class)
-                print("DTEST1 " + str(len(cf_potentials)))
                 for cf_potential in cf_potentials:
                     if (cf_potential.tag_name != "cf-section") & (cf_potential.tag_name.find("cf-") != -1):
                         labels = cf_potential.find_elements(*self.vro_section_label)
-                        # print("DTEST1 " + cf_potential.get_attribute("id"))
                         for label in labels:
-                            # if (label.text != "") | ((label.get_attribute("for") != None) & (label.get_attribute("for").find("input_") != -1)):
-                            #     page_dict[label.text] = cf_potential.get_attribute("id")
-                            #     break
-                            # if label.get_attribute("for") != None:
-                            #     print("DTEST" + label.text)
-                            #     if label.get_attribute("for").find("input_") != -1:
-                            #         page_dict[label.text] = cf_potential.get_attribute("id")
-                            # print("DTEST" + label.text)
-                            if label.get_attribute("text_content") != "":
-                                page_dict[label.get_attribute("textContent")] = cf_potential.get_attribute("id")
+                            if label.get_attribute("textContent") != "":
+                                page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "type": cf_potential.tag_name[3:]})
                                 break
                         break
-            workflow_struct[tabs[i].text] = page_dict
-        print(workflow_struct)
-        # for tab in tabs:
-        #     print(tab.text)
+            workflow_content_struct["tabs"].append({"name": tabs[i].text, "content": page_array})
+        print(workflow_content_struct)
+        workflow_struct = dict()
+        workflow_struct["workflows"] = []
+        workflow_struct["workflows"].append({"name": workflow_name, "content": workflow_content_struct})
+        self.dict_to_json_write_file(workflow_struct, workflow_name)
         return HtmlResponse(url=browser.current_url, body=workflow_content.get_attribute("outerHTML"), encoding="utf-8", request=request)
+
+    def dict_to_json_write_file(self, dict, name):
+        with open(name + '.json', 'w') as f:
+            json.dump(dict, f)
