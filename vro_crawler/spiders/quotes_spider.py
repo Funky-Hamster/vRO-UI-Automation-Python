@@ -1,6 +1,7 @@
 import scrapy
 from vro_crawler.spiders.vsphere_operations import VSphereOperations
 from vro_crawler.spiders.selenum_middleware import SeleniumMiddleware
+from vro_crawler.spiders.code_generator import CodeGenerator
 from selenium import webdriver
 import time
 
@@ -18,9 +19,15 @@ class QuotesSpider(scrapy.Spider):
         url = 'https://vpi163.pie.lab.emc.com/orchestration-ui/#/workflow?query=@tags:Dell_EMC'
         request = scrapy.Request(url=url)
         selenium_middleware_obj = SeleniumMiddleware()
-        response = selenium_middleware_obj.process_request_with_selenium(request, self.browser)
-        # print("DTEST" + str(response.body) + "DTEST BODY ENDS")
+        # save the fetching step for POC
+        #response = selenium_middleware_obj.fetch_workflows(request, self.browser)
+        # fetch the data in the inventory
+        url = 'https://vpi163.pie.lab.emc.com/orchestration-ui/#/inventory'
+        request = scrapy.Request(url=url)
+        response = selenium_middleware_obj.fetch_inventory(request, self.browser)
+        # code_generator_obj = CodeGenerator()
         self.parse(response)
+
         # yield request
 
     def parse(self, response):

@@ -10,36 +10,43 @@
                             {
                                 "label": "Cluster",
                                 "id": "clusterName",
+                                "for": "input_clusterName",
                                 "type": "dropdown"
                             },
                             {
                                 "label": "Access zone",
                                 "id": "zone",
+                                "for": "input_zone",
                                 "type": "dropdown"
                             },
                             {
                                 "label": "SMB share",
                                 "id": "name",
+                                "for": "input_name",
                                 "type": "dropdown"
                             },
                             {
                                 "label": "SMB share object",
                                 "id": "smbShareObj",
+                                "for": "input_smbShareObj",
                                 "type": "value-picker"
                             },
                             {
                                 "label": "Name",
                                 "id": "newSmbShareName",
+                                "for": "input_newSmbShareName",
                                 "type": "text-field"
                             },
                             {
                                 "label": "Description",
                                 "id": "description",
+                                "for": "input_description",
                                 "type": "text-field"
                             },
                             {
                                 "label": "Path",
                                 "id": "path",
+                                "for": "input_path",
                                 "type": "text-field"
                             }
                         ]
@@ -50,6 +57,7 @@
                             {
                                 "label": "Directory ACLs",
                                 "id": "dirACL",
+                                "for": "input_dirACL",
                                 "type": "dropdown"
                             }
                         ]
@@ -60,11 +68,13 @@
                             {
                                 "label": "Allow variable expansion",
                                 "id": "allowVarExp",
+                                "for": "input_allowVarExp",
                                 "type": "checkbox"
                             },
                             {
                                 "label": "Auto-create directories",
                                 "id": "autoCreateDir",
+                                "for": "input_autoCreateDir",
                                 "type": "checkbox"
                             }
                         ]
@@ -75,6 +85,7 @@
                             {
                                 "label": "Continuous Availability (non-editable)",
                                 "id": "enableContinuousAvailability",
+                                "for": "input_enableContinuousAvailability",
                                 "type": "text-field"
                             }
                         ]
@@ -85,61 +96,73 @@
                             {
                                 "label": " Read-only users ",
                                 "id": "roUsers",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Read-write users ",
                                 "id": "rwUsers",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Full control users ",
                                 "id": "fcUsers",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Root users ",
                                 "id": "rtUsers",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Read-only groups ",
                                 "id": "roGroups",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Read-write groups ",
                                 "id": "rwGroups",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Full control groups ",
                                 "id": "fcGroups",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Root groups ",
                                 "id": "rtGroups",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Read-only well-known SIDs ",
                                 "id": "roWellknowns",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Read-write well-known SIDs ",
                                 "id": "rwWellknowns",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Full control well-known SIDs ",
                                 "id": "fcWellknowns",
+                                "for": null,
                                 "type": "datagrid"
                             },
                             {
                                 "label": " Root well-known SIDs ",
                                 "id": "rtWellknowns",
+                                "for": null,
                                 "type": "datagrid"
                             }
                         ]
@@ -150,16 +173,19 @@
                             {
                                 "label": "Enable file filters",
                                 "id": "enableFileFilters",
+                                "for": "input_enableFileFilters",
                                 "type": "checkbox"
                             },
                             {
                                 "label": "File filter type",
                                 "id": "fileFilterType",
+                                "for": "input_fileFilterType",
                                 "type": "dropdown"
                             },
                             {
                                 "label": " File Filter Extensions ",
                                 "id": "fileFilterExtensions",
+                                "for": null,
                                 "type": "datagrid"
                             }
                         ]

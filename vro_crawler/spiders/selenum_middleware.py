@@ -19,6 +19,7 @@ class SeleniumMiddleware(object):
         self.vro_dashboard_area = (By.XPATH, "//div[@class='dash-area']")
         self.vro_workflow_item_area = (By.XPATH, "//div[@class='card-title dont-break-out']")
         self.vro_loading_center_spinner = (By.XPATH, "//div[@class='center-spinner']")
+        self.vro_inventory_loading_spinner = (By.XPATH, "//div[@class='clr-treenode-spinner']")
         self.vro_tree_library_position = (By.XPATH, "//*[contains(text(), 'Library')]")
         self.vro_tree_workflows_position = (By.XPATH, "//*[contains(text(), ' Workflows ')]")
         self.vro_tree_node = (By.TAG_NAME, "tree-node")
@@ -40,7 +41,17 @@ class SeleniumMiddleware(object):
         self.vro_section_select = (By.TAG_NAME, "select")
         self.vro_section_select_option = (By.TAG_NAME, "option")
 
-    def process_request_with_selenium(self, request, browser):
+        # inventory part
+        self.vro_inventory_node_class = (By.XPATH, "//div[@class='clr-tree-node-content-container']")
+        self.inventory_tree_id = (By.ID, "tree")
+        self.inventory_tree_node_tag = (By.TAG_NAME, "clr-tree-node")
+        self.button_tag = (By.TAG_NAME, "button")
+        self.tbody_tag = (By.TAG_NAME, "tbody")
+        self.tr_tag = (By.TAG_NAME, "tr")
+        self.th_tag = (By.TAG_NAME, "th")
+        self.td_tag = (By.TAG_NAME, "td")
+
+    def fetch_workflows(self, request, browser):
         self.explicit_wait = WebDriverWait(browser, 120)
         browser.get(request.url)
         self.explicit_wait.until(EC.visibility_of_element_located(self.login_page_title))
@@ -62,7 +73,6 @@ class SeleniumMiddleware(object):
             if (ele.text == "Library"):
                 ele.find_element(*self.expand_btn).click()
                 library_node = ele
-                print("DTEST clicked")
         time.sleep(3)
         library_eles = library_node.find_elements(*self.vro_tree_node)
         for ele in library_eles:
@@ -104,7 +114,7 @@ class SeleniumMiddleware(object):
                         labels = cf_potential.find_elements(*self.vro_section_label)
                         for label in labels:
                             if label.get_attribute("textContent") != "":
-                                page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "type": cf_potential.tag_name[3:]})
+                                page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]})
                                 break
                         break
             workflow_content_struct["tabs"].append({"name": tabs[i].text, "content": page_array})
@@ -118,3 +128,60 @@ class SeleniumMiddleware(object):
     def dict_to_json_write_file(self, dict, name):
         with open(name + '.json', 'w') as f:
             json.dump(dict, f)
+
+    def fetch_inventory(self, request, browser):
+        self.explicit_wait = WebDriverWait(browser, 120)
+        browser.get(request.url)
+        self.explicit_wait.until(EC.visibility_of_element_located(self.login_page_title))
+        browser.find_element(*self.username).send_keys('Administrator@vsphere.local')
+        browser.find_element(*self.password).send_keys('Password123!')
+        self.explicit_wait.until(EC.visibility_of_element_located(self.login_btn))
+        browser.find_element(*self.login_btn).click()
+        self.explicit_wait.until(EC.visibility_of_element_located(self.vro_dashboard_area))
+        browser.get(request.url)
+        self.explicit_wait.until(EC.visibility_of_element_located(self.vro_inventory_node_class))
+        time.sleep(3)
+        # # expanding
+        eles = browser.find_element(*self.inventory_tree_id).find_elements(*self.inventory_tree_node_tag)
+        inventories = []
+        plugin_name = "test"
+        for ele in eles:
+            if (ele.text.find("PowerScale") != -1):
+                ele.find_element(*self.expand_btn).click()
+                self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_inventory_loading_spinner))
+                powerscale_node = ele
+                plugin_name = ele.text
+        time.sleep(2)
+        cluster_eles = powerscale_node.find_elements(*self.inventory_tree_node_tag)
+        clusters = []
+        for ele in cluster_eles:
+            cluster_obj = dict()
+            self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_inventory_loading_spinner))
+            ele.find_element(*self.expand_btn).click()
+            self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_inventory_loading_spinner))
+            time.sleep(1)
+            resources = ele.find_elements(*self.inventory_tree_node_tag)
+            for resource in resources:
+                if (resource.text.find("SMB Shares") != -1):
+                    resource.find_element(*self.expand_btn).click()
+                    time.sleep(10)
+                    self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_inventory_loading_spinner))
+                    smbs = resource.find_elements(*self.inventory_tree_node_tag)
+                    smbs_dict = []
+                    for smb in smbs:
+                        # print(smb.text)
+                        smb.find_element(*self.treenode_link).click()
+                        time.sleep(0.5)
+                        tbody = browser.find_elements(*self.tbody_tag)[0]
+                        trs = tbody.find_elements(*self.tr_tag)
+                        smb_dict = []
+                        for tr in trs:
+                            # print(" " + tr.find_elements(*self.th_tag)[0].text + " " + tr.find_elements(*self.td_tag)[0].text)
+                            smb_dict.append({"title": tr.find_elements(*self.th_tag)[0].text, "value": tr.find_elements(*self.td_tag)[0].text})
+                        smbs_dict.append({"name": smb.text, "content": smb_dict})
+            cluster_dict = dict()
+            cluster_dict = {"name": ele.text.split("\n")[0], "content": [{"name": "SMB Shares"}, {"content": smbs_dict}]}
+            clusters.append(cluster_dict)
+        print(str(clusters))
+        self.dict_to_json_write_file(clusters, "PowerScale Inventory")
+        return HtmlResponse(url=browser.current_url, body=powerscale_node.get_attribute("outerHTML"), encoding="utf-8", request=request)
