@@ -180,7 +180,7 @@ class SeleniumMiddleware(object):
                             smb_dict.append({"title": tr.find_elements(*self.th_tag)[0].text, "value": tr.find_elements(*self.td_tag)[0].text})
                         smbs_dict.append({"name": smb.text, "content": smb_dict})
             cluster_dict = dict()
-            cluster_dict = {"name": ele.text.split("\n")[0], "content": [{"name": "SMB Shares"}, {"content": smbs_dict}]}
+            cluster_dict = {"name": ele.text.split("\n")[0], "content": [{"name": "SMB Shares", "content": smbs_dict}]}
             clusters.append(cluster_dict)
         print(str(clusters))
         self.dict_to_json_write_file(clusters, "PowerScale Inventory")

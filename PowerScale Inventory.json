@@ -3,9 +3,7 @@
         "name": "PowerScale244",
         "content": [
             {
-                "name": "SMB Shares"
-            },
-            {
+                "name": "SMB Shares",
                 "content": [
                     {
                         "name": "csi0zone : Hui-vro",
@@ -2612,9 +2610,7 @@
         "name": "pscale241",
         "content": [
             {
-                "name": "SMB Shares"
-            },
-            {
+                "name": "SMB Shares",
                 "content": [
                     {
                         "name": "csi0zoneGanesh : Hui-vro-csi0zone",

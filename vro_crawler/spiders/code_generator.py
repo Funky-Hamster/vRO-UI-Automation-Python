@@ -4,34 +4,43 @@ class CodeGenerator:
     def __init__(self):
         f = open('Modify SMB Share.json',)
         # returns JSON object as a dictionary
-        self.data = json.load(f)
+        self.workflow_data = json.load(f)
         # closing file
         f.close()
 
+        f = open('PowerScale Inventory.json',)
+        # returns JSON object as a dictionary
+        self.inventory_data = json.load(f)
+        # closing file
+        f.close()
+
+        self.MODIFY_SMB_SHARE_NAME = 'SMB_SHARE_AUTO_Dan'
+        self.SMB_SHARE_NAME_SYSTEM_INVENTORY = 'System : ' + self.MODIFY_SMB_SHARE_NAME
+
     # examples
-    # powerscale_create_smb_share_po = {
-    #     'cluster_id': 'input_clusterName',
-    #     'zone_id': 'input_zone',
-    #     'name_id': 'input_name',
-    #     'description_id': 'input_description',
-    #     'path_id': 'input_path',
-    #     'createIfNotExist_xpath': '//label[@for="input_createIfNotExist"]',
-    #     'directoryACLs_tab_xpath': '//a[text()="Directory ACLs"]',
-    #     'directoryACLs_id': 'input_dirACL',
-    #     'homeDirectoryProvisioning_tab_xpath': '//a[text()="Home directory provisioning"]',
-    #     'allowVarExp_xpath': '//label[@for="input_allowVarExp"]',
-    #     'create_home_directories_xpath': '//label[@for="input_autoCreateDir"]',
-    #     'continuousAvailability_tab_xpath': '//a[text()="Continuous Availability"]',
-    #     'continuousAvailability_xpath': '//label[@for="input_enableContinuousAvailability"]',
-    #     'members_xpath': '//a[text()="Members"]',
-    #     'file_filter_tab_xpath': '//a[text()="File Filter"]',
-    #     'enable_file_filters_xpath': '//label[@for="input_enableFileFilters"]',
-    #     'file_filter_type_id': 'input_fileFilterType',
-    #     'file_filter_extensions1_xpath': '//*[@id="fileFilterExtensions"]/div/div[2]/div[1]/input',
-    #     'file_filter_extensions2_xpath': '//*[@id="fileFilterExtensions"]/div/div[2]/div[2]/input',
-    #     'file_filter_extensions_add_xpath': '//clr-icon[@shape="plus-circle"]',
-    #     'run_button_id': 'confirm-btn'
-    # }
+    powerscale_create_smb_share_po = {
+        'cluster_id': 'input_clusterName',
+        'zone_id': 'input_zone',
+        'name_id': 'input_name',
+        'description_id': 'input_description',
+        'path_id': 'input_path',
+        'createIfNotExist_xpath': '//label[@for="input_createIfNotExist"]',
+        'directoryACLs_tab_xpath': '//a[text()="Directory ACLs"]',
+        'directoryACLs_id': 'input_dirACL',
+        'homeDirectoryProvisioning_tab_xpath': '//a[text()="Home directory provisioning"]',
+        'allowVarExp_xpath': '//label[@for="input_allowVarExp"]',
+        'create_home_directories_xpath': '//label[@for="input_autoCreateDir"]',
+        'continuousAvailability_tab_xpath': '//a[text()="Continuous Availability"]',
+        'continuousAvailability_xpath': '//label[@for="input_enableContinuousAvailability"]',
+        'members_xpath': '//a[text()="Members"]',
+        'file_filter_tab_xpath': '//a[text()="File Filter"]',
+        'enable_file_filters_xpath': '//label[@for="input_enableFileFilters"]',
+        'file_filter_type_id': 'input_fileFilterType',
+        'file_filter_extensions1_xpath': '//*[@id="fileFilterExtensions"]/div/div[2]/div[1]/input',
+        'file_filter_extensions2_xpath': '//*[@id="fileFilterExtensions"]/div/div[2]/div[2]/input',
+        'file_filter_extensions_add_xpath': '//clr-icon[@shape="plus-circle"]',
+        'run_button_id': 'confirm-btn'
+    }
 
     # powerscale_create_smb_share_inventory_po = {
     #     'cluster_expand_xpath': '//label[@title="' + CLUSTER_CONNECTION_NAME + '"]/parent::button/parent::div/parent::div/button[@type="button"]',
@@ -94,6 +103,64 @@ class CodeGenerator:
     # }
 
 
-    # def generate_page_object(self):
-    #     # TODO change '[0]' to search by name
-    #     tabs = self.data['workflows'][0]['content']['tabs']
+    def generate_page_object(self):
+        # TODO change '[0]' to search by name
+        workflow_po = dict()
+        inventory_po = dict()
+        tabs = self.workflow_data['workflows'][0]['content']['tabs']
+        for tab in tabs:
+            workflow_po[tab['name'].lower().replace(" ", "_") + "_xpath"] = '//a[text()="' + tab['name'] + '"]'
+            contents = tab['content']
+            for content in contents:
+                workflow_po[content['id']] = content['for']
+        workflow_po['confirm-btn'] = 'confirm-btn'
+        print(workflow_po)
+        self.dict_to_json_write_file(workflow_po, "Modify SMB Share Workflow PO")
+
+        inventory_po = dict()
+
+        demos = self.inventory_data[0]['content'][0]['content'][0]['content']
+        for demo in demos:
+            inventory_po[demo['title'] + '_xpath'] = self.get_inventory_attribute_by_title(demo['title'])
+        inventory_po['cluster_expand_xpath'] = self.get_expand_path_by_name('PowerScale244')
+        inventory_po['smb_shares_expand_xpath'] = self.get_expand_path_by_name('SMB Shares')
+        inventory_po['smb_share_item_system_xpath'] = self.get_expand_path_by_name(self.SMB_SHARE_NAME_SYSTEM_INVENTORY)
+        print(inventory_po)
+        self.dict_to_json_write_file(inventory_po, "Modify SMB Share Inventory PO")
+
+    def generate_json_to_py(self):
+        f = open('Modify SMB Share Workflow PO.json',)
+        # returns JSON object as a dictionary
+        po_data = json.load(f)
+        # closing file
+        f.close()
+        with open('po_test.py', 'w') as file_handle:
+            file_handle.write('from Config.PowerScale.property import *\n')
+            file_handle.write('\n')
+            file_handle.write('powerscale_modify_smb_share_po = ')
+            file_handle.write(str(po_data))
+
+        f = open('Modify SMB Share Inventory PO.json',)
+        # returns JSON object as a dictionary
+        po_data = json.load(f)
+        # closing file
+        f.close()
+        with open('po_inventoy_test.py', 'w') as file_handle:
+            file_handle.write('from Config.PowerScale.property import *\n')
+            file_handle.write('\n')
+            file_handle.write('powerscale_modify_smb_share_basic_inventory = ')
+            po_data['smb_share_item_system_xpath'] = '&&$$SMB_SHARE_NAME_SYSTEM_INVENTORY&&$$'
+            file_handle.write(str(po_data).replace("'&&$$", "").replace("&&$$'", ""))
+            
+    # def generate_config(self):
+
+    def dict_to_json_write_file(self, dict, name):
+        with open(name + '.json', 'w') as f:
+            json.dump(dict, f)
+
+    def get_expand_path_by_name(self, name):
+        return '//label[@title="' + name + '"]/parent::button/parent::div/parent::div/button[@type="button"]'
+
+    def get_inventory_attribute_by_title(self, title):
+        return '//th[text()="' + title + '"]/following-sibling::td'
+
