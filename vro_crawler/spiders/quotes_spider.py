@@ -32,7 +32,7 @@ class QuotesSpider(scrapy.Spider):
     def start_requests(self):
         code_generator_obj = CodeGenerator()
         # code_generator_obj.generate_page_object()
-        code_generator_obj.generate_json_to_py()
+        code_generator_obj.generate_config_json_to_py()
 
     def parse(self, response):
         page = 'daniel-test'

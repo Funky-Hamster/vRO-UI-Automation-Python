@@ -1,14 +1,15 @@
 import json
+import re
 
 class CodeGenerator:
     def __init__(self):
-        f = open('Modify SMB Share.json',)
+        f = open('Modify SMB Share.json')
         # returns JSON object as a dictionary
         self.workflow_data = json.load(f)
         # closing file
         f.close()
 
-        f = open('PowerScale Inventory.json',)
+        f = open('PowerScale Inventory.json')
         # returns JSON object as a dictionary
         self.inventory_data = json.load(f)
         # closing file
@@ -129,7 +130,7 @@ class CodeGenerator:
         self.dict_to_json_write_file(inventory_po, "Modify SMB Share Inventory PO")
 
     def generate_json_to_py(self):
-        f = open('Modify SMB Share Workflow PO.json',)
+        f = open('Modify SMB Share Workflow PO.json')
         # returns JSON object as a dictionary
         po_data = json.load(f)
         # closing file
@@ -140,7 +141,7 @@ class CodeGenerator:
             file_handle.write('powerscale_modify_smb_share_po = ')
             file_handle.write(str(po_data))
 
-        f = open('Modify SMB Share Inventory PO.json',)
+        f = open('Modify SMB Share Inventory PO.json')
         # returns JSON object as a dictionary
         po_data = json.load(f)
         # closing file
@@ -152,15 +153,53 @@ class CodeGenerator:
             po_data['smb_share_item_system_xpath'] = '&&$$SMB_SHARE_NAME_SYSTEM_INVENTORY&&$$'
             file_handle.write(str(po_data).replace("'&&$$", "").replace("&&$$'", ""))
             
-    # def generate_config(self):
+    def generate_config(self):
+        workflow_config = dict()
+        inventory_config = dict()
+        tabs = self.workflow_data['workflows'][0]['content']['tabs']
+        for tab in tabs:
+            for row in tab['content']:
+                workflow_config[row['label'].strip().capitalize().replace("-", "_").replace(" ", "_")] = "$$##" + self.pascal_case_to_snake_case(row['id']).upper().replace("A_C_L", "ACL") + "$$##"
+        self.dict_to_json_write_file(workflow_config, "Modify SMB Share Workflow Config")
+        demos = self.inventory_data[0]['content'][0]['content'][0]['content']
+        for demo in demos:
+            inventory_config[demo['title']] = "$$##" + self.pascal_case_to_snake_case(demo['title']).upper() + "$$##"
+        self.dict_to_json_write_file(inventory_config, "Modify SMB Share Inventory Config")
 
-    def dict_to_json_write_file(self, dict, name):
+    def generate_config_json_to_py(self):
+        f = open('Modify SMB Share Workflow Config.json')
+        # returns JSON object as a dictionary
+        workflow_config_data = json.load(f)
+        # closing file
+        f.close()
+        f = open('Modify SMB Share Inventory Config.json')
+        # returns JSON object as a dictionary
+        inventory_config_data = json.load(f)
+        # closing file
+        f.close()
+        with open('config.py', 'w') as file_handle:
+            file_handle.write('from Config.PowerScale.property import *\n')
+            file_handle.write('\n')
+            file_handle.write('powerscale_modify_smb_share_workflow_config = ')
+            file_handle.write(str(workflow_config_data).replace("'$$##", "").replace("$$##'", ""))
+            file_handle.write('\n')
+            file_handle.write('powerscale_modify_smb_share_inventory_config = ')
+            file_handle.write(str(inventory_config_data).replace("'$$##", "").replace("$$##'", "").replace("@", ""))
+
+    def dict_to_json_write_file(self, dict_obj: dict, name: str):
         with open(name + '.json', 'w') as f:
-            json.dump(dict, f)
+            json.dump(dict_obj, f)
 
-    def get_expand_path_by_name(self, name):
+    def get_expand_path_by_name(self, name: str):
         return '//label[@title="' + name + '"]/parent::button/parent::div/parent::div/button[@type="button"]'
 
-    def get_inventory_attribute_by_title(self, title):
+    def get_inventory_attribute_by_title(self, title: str):
         return '//th[text()="' + title + '"]/following-sibling::td'
 
+    def pascal_case_to_snake_case(self, camel_case: str):
+        snake_case = re.sub(r"(?P<key>[A-Z])", r"_\g<key>", camel_case)
+        return snake_case.lower().strip('_')
+
+    def snake_case_to_pascal_case(self, snake_case: str):
+        words = snake_case.split('_')
+        return ''.join(word.title() for word in words)
