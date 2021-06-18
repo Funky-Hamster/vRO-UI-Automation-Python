@@ -1,5 +1,227 @@
 [
     {
+        "name": "PowerScale199",
+        "content": [
+            {
+                "name": "SMB Shares",
+                "content": [
+                    {
+                        "name": "System : hui-smb",
+                        "content": [
+                            {
+                                "title": "homeDirectoryProvisioning",
+                                "value": "Path variables will not be expanded Directories will not be automatically created"
+                            },
+                            {
+                                "title": "fileFilterType",
+                                "value": "Deny writes for list of file extensions"
+                            },
+                            {
+                                "title": "description",
+                                "value": ""
+                            },
+                            {
+                                "title": "fileFilterExtensions",
+                                "value": ""
+                            },
+                            {
+                                "title": "path",
+                                "value": "/ifs/data/zone2/vro/negative"
+                            },
+                            {
+                                "title": "zone",
+                                "value": "System"
+                            },
+                            {
+                                "title": "continuousAvailability",
+                                "value": "Disabled"
+                            },
+                            {
+                                "title": "members",
+                                "value": "Member, Type, Permission; Everyone, wellknown, root"
+                            },
+                            {
+                                "title": "name",
+                                "value": "hui-smb"
+                            },
+                            {
+                                "title": "fileFilterEnabled",
+                                "value": "Disabled"
+                            },
+                            {
+                                "title": "createPermissions",
+                                "value": "Default acl"
+                            },
+                            {
+                                "title": "@fullType",
+                                "value": "PowerScale:SmbShare"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "System : hui-smb-1",
+                        "content": [
+                            {
+                                "title": "homeDirectoryProvisioning",
+                                "value": "Path variables will not be expanded Directories will not be automatically created"
+                            },
+                            {
+                                "title": "fileFilterType",
+                                "value": "Deny writes for list of file extensions"
+                            },
+                            {
+                                "title": "description",
+                                "value": ""
+                            },
+                            {
+                                "title": "fileFilterExtensions",
+                                "value": ""
+                            },
+                            {
+                                "title": "path",
+                                "value": "/ifs/data/zone2/vro/nfs"
+                            },
+                            {
+                                "title": "zone",
+                                "value": "System"
+                            },
+                            {
+                                "title": "continuousAvailability",
+                                "value": "Disabled"
+                            },
+                            {
+                                "title": "members",
+                                "value": "Member, Type, Permission; Everyone, wellknown, read"
+                            },
+                            {
+                                "title": "name",
+                                "value": "hui-smb-1"
+                            },
+                            {
+                                "title": "fileFilterEnabled",
+                                "value": "Disabled"
+                            },
+                            {
+                                "title": "createPermissions",
+                                "value": "Default acl"
+                            },
+                            {
+                                "title": "@fullType",
+                                "value": "PowerScale:SmbShare"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "System : yian_smb_share_1",
+                        "content": [
+                            {
+                                "title": "homeDirectoryProvisioning",
+                                "value": "Path variables will be expanded Directories will be automatically created"
+                            },
+                            {
+                                "title": "fileFilterType",
+                                "value": "Deny writes for list of file extensions"
+                            },
+                            {
+                                "title": "description",
+                                "value": ""
+                            },
+                            {
+                                "title": "fileFilterExtensions",
+                                "value": ""
+                            },
+                            {
+                                "title": "path",
+                                "value": "/ifs"
+                            },
+                            {
+                                "title": "zone",
+                                "value": "System"
+                            },
+                            {
+                                "title": "continuousAvailability",
+                                "value": "Enabled"
+                            },
+                            {
+                                "title": "members",
+                                "value": "Member, Type, Permission; Everyone, wellknown, read"
+                            },
+                            {
+                                "title": "name",
+                                "value": "yian_smb_share_1"
+                            },
+                            {
+                                "title": "fileFilterEnabled",
+                                "value": "Disabled"
+                            },
+                            {
+                                "title": "createPermissions",
+                                "value": "Default acl"
+                            },
+                            {
+                                "title": "@fullType",
+                                "value": "PowerScale:SmbShare"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "zone1 : SMB_SHARE_AUTO-54233695",
+                        "content": [
+                            {
+                                "title": "homeDirectoryProvisioning",
+                                "value": "Path variables will not be expanded Directories will not be automatically created"
+                            },
+                            {
+                                "title": "fileFilterType",
+                                "value": "Allow writes for list of file extensions"
+                            },
+                            {
+                                "title": "description",
+                                "value": "SMB Share created by automation testing."
+                            },
+                            {
+                                "title": "fileFilterExtensions",
+                                "value": "doc, txt"
+                            },
+                            {
+                                "title": "path",
+                                "value": "/ifs/zone1"
+                            },
+                            {
+                                "title": "zone",
+                                "value": "zone1"
+                            },
+                            {
+                                "title": "continuousAvailability",
+                                "value": "Disabled"
+                            },
+                            {
+                                "title": "members",
+                                "value": "Member, Type, Permission; Everyone, wellknown, read; root, user, change"
+                            },
+                            {
+                                "title": "name",
+                                "value": "SMB_SHARE_AUTO-54233695"
+                            },
+                            {
+                                "title": "fileFilterEnabled",
+                                "value": "Enabled"
+                            },
+                            {
+                                "title": "createPermissions",
+                                "value": "Default acl"
+                            },
+                            {
+                                "title": "@fullType",
+                                "value": "PowerScale:SmbShare"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "name": "PowerScale244",
         "content": [
             {
@@ -3233,59 +3455,6 @@
                             {
                                 "title": "name",
                                 "value": "SMB_test_dir_krishna_test"
-                            },
-                            {
-                                "title": "fileFilterEnabled",
-                                "value": "Disabled"
-                            },
-                            {
-                                "title": "createPermissions",
-                                "value": "Default acl"
-                            },
-                            {
-                                "title": "@fullType",
-                                "value": "PowerScale:SmbShare"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "System : Smb7_Ansible_Test_SMB",
-                        "content": [
-                            {
-                                "title": "homeDirectoryProvisioning",
-                                "value": "Path variables will not be expanded Directories will not be automatically created"
-                            },
-                            {
-                                "title": "fileFilterType",
-                                "value": "Deny writes for list of file extensions"
-                            },
-                            {
-                                "title": "description",
-                                "value": ""
-                            },
-                            {
-                                "title": "fileFilterExtensions",
-                                "value": ""
-                            },
-                            {
-                                "title": "path",
-                                "value": "/ifs/system/"
-                            },
-                            {
-                                "title": "zone",
-                                "value": "System"
-                            },
-                            {
-                                "title": "continuousAvailability",
-                                "value": "Disabled"
-                            },
-                            {
-                                "title": "members",
-                                "value": "Member, Type, Permission; , Not Found, read"
-                            },
-                            {
-                                "title": "name",
-                                "value": "Smb7_Ansible_Test_SMB"
                             },
                             {
                                 "title": "fileFilterEnabled",

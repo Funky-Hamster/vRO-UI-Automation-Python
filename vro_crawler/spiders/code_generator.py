@@ -186,6 +186,70 @@ class CodeGenerator:
             file_handle.write('powerscale_modify_smb_share_inventory_config = ')
             file_handle.write(str(inventory_config_data).replace("'$$##", "").replace("$$##'", "").replace("@", ""))
 
+    def generate_robot(self, platform: str = 'PowerScale', workflow: str = 'Modify SMB Share', username: str = 'root', password: str = 'vRO4Life!'):
+        snake_case_workflow = workflow.strip().replace(" ", "_").lower()
+        with open(workflow + '.robot', 'w') as file_handle:
+            file_handle.write('*** Settings ***\n')
+            file_handle.write('Library    SeleniumLibrary    120\n')
+            file_handle.write('Library    RequestsLibrary\n')
+            file_handle.write('Resource    ../Keywords_common.robot\n')
+            file_handle.write('Library    ../custom_defined_keywords_common.py\n')
+            file_handle.write('Variables    ../../PageObjects/' + platform + '/' + snake_case_workflow + 'po.py\n')
+            file_handle.write('\n')
+            file_handle.write('*** Variables ***\n')
+            file_handle.write('&{headers}  Content-Type=application/json  Accpet=application/json    ')
+            if platform.find('PowerScale') != -1:
+                file_handle.write('x-isi-ifs-target-type=container    x-isi-ifs-access-control=public_read_write\n')
+            else:
+                file_handle.write('\n')
+            file_handle.write('@{auth}    ' + username + '    ' + password + '\n')
+            file_handle.write('\n')
+            file_handle.write('*** Keywords ***\n')
+            file_handle.write('Workflow ' + workflow + ' Basic\n')
+            # Leave the documentation tag for now, TODO: Add documentation logic
+            data = snake_case_workflow + '_data'
+            file_handle.write('    [Arguments]    &{' + data + '}\n')
+            file_handle.write('    Sleep    10\n')
+            # open PO data
+            tabs = self.workflow_data['workflows'][0]['content']['tabs']
+            # Wait for each element and make selection or input
+            for tab in tabs:
+                file_handle.write('    Click Element    xpath=' + '//a[text()="' + tab['name'] + '"]\n')
+                for row in tab['content']:
+                    if (row['for'] != None) & (row['label'].find('non-editable') == -1) & (row['type'] != 'multi-select') & (row['type'] != 'array'):
+                        file_handle.write('    Sleep    10\n')
+                        if row['type'] != 'checkbox':
+                            file_handle.write('    Wait Until Element Is Visible    id=' + row['for'] + '\n')
+                        if (row['type'] == 'dropdown') | (row['type'] == 'value-picker'):
+                            file_handle.write('    Select From List By Label    ')
+                        elif (row['type'] == 'text-field'):
+                            file_handle.write('    Input Text    ')
+                        elif row['type'] == 'checkbox':
+                            file_handle.write('    Wait Until Element Is Visible    xpath=//label[@for="' + row['for'] + '"]\n')
+                            file_handle.write('    Click Element    xpath=//label[@for="' + row['for'] + '"]\n')
+                            continue
+                        else:
+                            continue
+                        file_handle.write('id=' + row['for'] + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_") + '}\n')
+                    
+                    elif (row['type'] == 'multi-select'):
+                        file_handle.write('    Click Element    xpath=//label[contains(text(),"' + row['label'].strip() + '")]/parent::div/parent::div//option[text()="${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_") + '}"]\n')
+                    elif (row['type'] == 'array'):
+                        file_handle.write('    Wait Until Element Is Enabled    xpath=//*[@id="' + row['id'] + '"]/div/div[2]/div[1]/input\n')
+                        file_handle.write('    Input Text    xpath=//*[@id="' + row['id'] + '"]/div/div[2]/div[1]/input' + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_") + '}\n')
+
+
+            file_handle.write('    No Errors\n')
+            file_handle.write('    Click Button    id=${powerscale_create_smb_share_po[\'run_button_id\']}\n')
+            file_handle.write('    Wait Until Element Is Visible    xpath=//div[@id=\'wfStatusInfo\']//span\n')
+            file_handle.write('    Wait Until Element Does Not Contain    xpath=//div[@id=\'wfStatusInfo\']//span    Running\n')
+            file_handle.write('    ${status}    Get Text    xpath=//div[@id=\'wfStatusInfo\']//span\n')
+            file_handle.write('    [Return]    ${status}\n')
+
+    # def generate_data(self):
+
+
+
     def dict_to_json_write_file(self, dict_obj: dict, name: str):
         with open(name + '.json', 'w') as f:
             json.dump(dict_obj, f)

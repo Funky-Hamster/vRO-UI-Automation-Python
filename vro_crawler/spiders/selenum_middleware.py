@@ -67,7 +67,7 @@ class SeleniumMiddleware(object):
         self.explicit_wait.until(EC.visibility_of_element_located(self.tree_view_icon))
         browser.find_element(*self.tree_view_icon).click()
         self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
-        time.sleep(5)
+        time.sleep(10)
         eles = browser.find_elements(*self.vro_tree_node)
         for ele in eles:
             if (ele.text == "Library"):

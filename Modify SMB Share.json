@@ -94,76 +94,76 @@
                         "name": "Members",
                         "content": [
                             {
-                                "label": " Read-only users ",
+                                "label": "Read-only users",
                                 "id": "roUsers",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_roUsers",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Read-write users ",
+                                "label": "Read-write users",
                                 "id": "rwUsers",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_rwUsers",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Full control users ",
+                                "label": "Full control users",
                                 "id": "fcUsers",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_fcUsers",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Root users ",
+                                "label": "Root users",
                                 "id": "rtUsers",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_rtUsers",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Read-only groups ",
+                                "label": "Read-only groups",
                                 "id": "roGroups",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_roGroups",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Read-write groups ",
+                                "label": "Read-write groups",
                                 "id": "rwGroups",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_rwGroups",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Full control groups ",
+                                "label": "Full control groups",
                                 "id": "fcGroups",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_fcGroups",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Root groups ",
+                                "label": "Root groups",
                                 "id": "rtGroups",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_rtGroups",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Read-only well-known SIDs ",
+                                "label": "Read-only well-known SIDs",
                                 "id": "roWellknowns",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_roWellknowns",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Read-write well-known SIDs ",
+                                "label": "Read-write well-known SIDs",
                                 "id": "rwWellknowns",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_rwWellknowns",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Full control well-known SIDs ",
+                                "label": "Full control well-known SIDs",
                                 "id": "fcWellknowns",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_fcWellknowns",
+                                "type": "multi-select"
                             },
                             {
-                                "label": " Root well-known SIDs ",
+                                "label": "Root well-known SIDs",
                                 "id": "rtWellknowns",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_rtWellknowns",
+                                "type": "multi-select"
                             }
                         ]
                     },
@@ -183,10 +183,10 @@
                                 "type": "dropdown"
                             },
                             {
-                                "label": " File Filter Extensions ",
+                                "label": "File Filter Extensions",
                                 "id": "fileFilterExtensions",
-                                "for": null,
-                                "type": "datagrid"
+                                "for": "input_fileFilterExtensions",
+                                "type": "array"
                             }
                         ]
                     }
