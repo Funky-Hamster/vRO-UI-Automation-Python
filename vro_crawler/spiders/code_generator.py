@@ -18,6 +18,17 @@ class CodeGenerator:
         self.MODIFY_SMB_SHARE_NAME = 'SMB_SHARE_AUTO_Dan'
         self.SMB_SHARE_NAME_SYSTEM_INVENTORY = 'System : ' + self.MODIFY_SMB_SHARE_NAME
 
+    inventory_to_workflow_data_title = {
+        'storage': ['cluster', 'unity_storage_system'],
+        # 'homeDirectoryProvisioning': {'Auto-create directories': {'Path variables will not be expanded Directories will not be automatically created': 'true', '': ''}},
+        'description': 'description',
+        'path': 'path',
+        'zone': 'access_zone',
+        # 'members': 
+        'name': 'name',
+        'createPermissions': 'directory_acls'
+    }
+
     # examples
     powerscale_create_smb_share_po = {
         'cluster_id': 'input_clusterName',
@@ -27,7 +38,7 @@ class CodeGenerator:
         'path_id': 'input_path',
         'createIfNotExist_xpath': '//label[@for="input_createIfNotExist"]',
         'directoryACLs_tab_xpath': '//a[text()="Directory ACLs"]',
-        'directoryACLs_id': 'input_dirACL',
+        'directoryACLs_id': 'input_dirACL',      
         'homeDirectoryProvisioning_tab_xpath': '//a[text()="Home directory provisioning"]',
         'allowVarExp_xpath': '//label[@for="input_allowVarExp"]',
         'create_home_directories_xpath': '//label[@for="input_autoCreateDir"]',
@@ -46,7 +57,7 @@ class CodeGenerator:
     # powerscale_create_smb_share_inventory_po = {
     #     'cluster_expand_xpath': '//label[@title="' + CLUSTER_CONNECTION_NAME + '"]/parent::button/parent::div/parent::div/button[@type="button"]',
     #     'smb_shares_expand_xpath': '//label[@title="SMB Shares"]/parent::button/parent::div/parent::div/button[@type="button"]',
-    #     'smb_share_item_system_xpath': '//label[@title="' + SMB_SHARE_NAME_SYSTEM_INVENTORY + '"]/parent::button',
+    #     'smb_share_item_system_xpath': '//label[@title="System : SMB_SHARE_AUTO_Dan"]/parent::button',
     #     'smb_share_item_display_name_xpath': '//h4',
     #     'homeDirectoryProvisioning_attribute_xpath': '//th[text()="homeDirectoryProvisioning"]/following-sibling::td',
     #     'fileFilterType_attribute_xpath': '//th[text()="fileFilterType"]/following-sibling::td',
@@ -186,7 +197,8 @@ class CodeGenerator:
             file_handle.write('powerscale_modify_smb_share_inventory_config = ')
             file_handle.write(str(inventory_config_data).replace("'$$##", "").replace("$$##'", "").replace("@", ""))
 
-    def generate_robot(self, platform: str = 'PowerScale', workflow: str = 'Modify SMB Share', username: str = 'root', password: str = 'vRO4Life!'):
+    def generate_robot(self, platform: str = 'PowerScale', resource: str = 'SMB Share', workflow: str = 'Modify SMB Share', username: str = 'root', password: str = 'vRO4Life!'):
+        # generate workflow robot
         snake_case_workflow = workflow.strip().replace(" ", "_").lower()
         with open(workflow + '.robot', 'w') as file_handle:
             file_handle.write('*** Settings ***\n')
@@ -208,6 +220,7 @@ class CodeGenerator:
             file_handle.write('Workflow ' + workflow + ' Basic\n')
             # Leave the documentation tag for now, TODO: Add documentation logic
             data = snake_case_workflow + '_data'
+            modify_smb_share_data = {'cluster': 'PowerScale199', 'zone': 'System', 'name': 'dan-test'}
             file_handle.write('    [Arguments]    &{' + data + '}\n')
             file_handle.write('    Sleep    10\n')
             # open PO data
@@ -230,15 +243,13 @@ class CodeGenerator:
                             continue
                         else:
                             continue
-                        file_handle.write('id=' + row['for'] + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_") + '}\n')
+                        file_handle.write('id=' + row['for'] + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '}\n')
                     
                     elif (row['type'] == 'multi-select'):
-                        file_handle.write('    Click Element    xpath=//label[contains(text(),"' + row['label'].strip() + '")]/parent::div/parent::div//option[text()="${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_") + '}"]\n')
+                        file_handle.write('    Click Element    xpath=//label[contains(text(),"' + row['label'].strip() + '")]/parent::div/parent::div//option[text()="${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '}"]\n')
                     elif (row['type'] == 'array'):
                         file_handle.write('    Wait Until Element Is Enabled    xpath=//*[@id="' + row['id'] + '"]/div/div[2]/div[1]/input\n')
-                        file_handle.write('    Input Text    xpath=//*[@id="' + row['id'] + '"]/div/div[2]/div[1]/input' + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_") + '}\n')
-
-
+                        file_handle.write('    Input Text    xpath=//*[@id="' + row['id'] + '"]/div/div[2]/div[1]/input' + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '}\n')
             file_handle.write('    No Errors\n')
             file_handle.write('    Click Button    id=${powerscale_create_smb_share_po[\'run_button_id\']}\n')
             file_handle.write('    Wait Until Element Is Visible    xpath=//div[@id=\'wfStatusInfo\']//span\n')
@@ -246,9 +257,46 @@ class CodeGenerator:
             file_handle.write('    ${status}    Get Text    xpath=//div[@id=\'wfStatusInfo\']//span\n')
             file_handle.write('    [Return]    ${status}\n')
 
-    # def generate_data(self):
+            # generate validation for the inventory
+            plugin_name = 'Dell EMC ' + platform
+            file_handle.write('\n')
+            file_handle.write('Validate Workflow ' + workflow + ' Basic\n')
+            inventory_item = snake_case_workflow + '_inventory_item'
+            file_handle.write('    [Arguments]    &{' + data + '}\n')
+            file_handle.write('    Click Element    xpath=//a[@href =\'#/inventory\']\n')
+            file_handle.write('    Wait Until Element Is Visible    xpath=//label[text()=\'' + plugin_name + '\']' + '\n')
+            file_handle.write('    Wait Until Element Is Enabled    xpath=' + self.get_expand_path_by_name(plugin_name) + '\n')
+            file_handle.write('    Click Button    xpath=' + self.get_expand_path_by_name(plugin_name) + '\n')
 
+            file_handle.write('    Wait Until Element Is Enabled    xpath=' + self.get_expand_path_by_name('${' + data + '.' + self.find_storage(self.inventory_to_workflow_data_title['storage'], {data}) + '}') + '\n')
+            file_handle.write('    Click Button    xpath=' + self.get_expand_path_by_name('${' + data + '.' + self.find_storage(self.inventory_to_workflow_data_title['storage'], {data}) + '}') + '\n')
+            file_handle.write('    Wait Until Element Is Enabled    xpath=' + self.get_expand_path_by_name(resource + 's') + '\n')
+            file_handle.write('    Click Button    xpath=' + self.get_expand_path_by_name(resource + 's') + '\n')
+            # TODO: generate dict data
+            file_handle.write('    Wait Until Element Is Enabled    xpath=' + self.get_related_button(self.generate_resource_name(platform, resource, data)) + '\n')
+            file_handle.write('    Click Button    xpath=' + self.get_related_button(self.generate_resource_name(platform, resource, data)) + '\n')
+            # ${display_name}    Get Text  xpath=${powerscale_create_smb_share_inventory_po['smb_share_item_display_name_xpath']}
+            # Should Be Equal    ${display_name}    ${smb_basic_inventory_item.display_name}
+            items = self.inventory_data[0]['content'][0]['content'][0]['content']
+            for item in items:
+                title = item['title']
+                if self.inventory_to_workflow_data_title.__contains__(title):
+                    file_handle.write('    ${' + title + '}    Get Text  xpath=//th[text()="' + title + '"]/following-sibling::td\n')
+                    file_handle.write('    Should Be Equal    ${' + title + '}    ${' + data + '.' + self.inventory_to_workflow_data_title[title] + '}\n')
 
+    def find_storage(self, storage_array, data: dict):
+        return 'cluster'
+        # print(data)
+        # for storage in storage_array:
+        #     if data[storage] != None:
+        #         return storage
+
+    def generate_resource_name(self, platform: str, resource: str, data_var: str):
+        if platform.find('PowerScale') != -1:
+            if resource.find('SMB') != -1:
+                return '${' + data_var + '.access_zone} : ${' + data_var + '.name}'
+        #         return data['zone'] + ' : ' + data['name']
+        # return ''
 
     def dict_to_json_write_file(self, dict_obj: dict, name: str):
         with open(name + '.json', 'w') as f:
@@ -256,6 +304,9 @@ class CodeGenerator:
 
     def get_expand_path_by_name(self, name: str):
         return '//label[@title="' + name + '"]/parent::button/parent::div/parent::div/button[@type="button"]'
+
+    def get_related_button(self, name: str):
+        return '//label[@title="' + name + '"]/parent::button'
 
     def get_inventory_attribute_by_title(self, title: str):
         return '//th[text()="' + title + '"]/following-sibling::td'
