@@ -3,10 +3,10 @@ Library    SeleniumLibrary    120
 Library    RequestsLibrary
 Resource    ../Keywords_common.robot
 Library    ../custom_defined_keywords_common.py
-Variables    ../../PageObjects/PowerScale/modify_smb_sharepo.py
+Variables    ../../PageObjects/Create SMB Share/modify_smb_sharepo.py
 
 *** Variables ***
-&{headers}  Content-Type=application/json  Accpet=application/json    x-isi-ifs-target-type=container    x-isi-ifs-access-control=public_read_write
+&{headers}  Content-Type=application/json  Accpet=application/json    
 @{auth}    root    vRO4Life!
 
 *** Keywords ***
@@ -79,22 +79,10 @@ Workflow Modify SMB Share Basic
 Validate Workflow Modify SMB Share Basic
     [Arguments]    &{modify_smb_share_data}
     Click Element    xpath=//a[@href ='#/inventory']
-    Wait Until Element Is Visible    xpath=//label[text()='Dell EMC PowerScale']
-    Wait Until Element Is Enabled    xpath=//label[@title="Dell EMC PowerScale"]/parent::button/parent::div/parent::div/button[@type="button"]
-    Click Button    xpath=//label[@title="Dell EMC PowerScale"]/parent::button/parent::div/parent::div/button[@type="button"]
+    Wait Until Element Is Visible    xpath=//label[text()='Dell EMC Create SMB Share']
+    Wait Until Element Is Enabled    xpath=//label[@title="Dell EMC Create SMB Share"]/parent::button/parent::div/parent::div/button[@type="button"]
+    Click Button    xpath=//label[@title="Dell EMC Create SMB Share"]/parent::button/parent::div/parent::div/button[@type="button"]
     Wait Until Element Is Enabled    xpath=//label[@title="${modify_smb_share_data.cluster}"]/parent::button/parent::div/parent::div/button[@type="button"]
     Click Button    xpath=//label[@title="${modify_smb_share_data.cluster}"]/parent::button/parent::div/parent::div/button[@type="button"]
     Wait Until Element Is Enabled    xpath=//label[@title="SMB Shares"]/parent::button/parent::div/parent::div/button[@type="button"]
     Click Button    xpath=//label[@title="SMB Shares"]/parent::button/parent::div/parent::div/button[@type="button"]
-    Wait Until Element Is Enabled    xpath=//label[@title="${modify_smb_share_data.access_zone} : ${modify_smb_share_data.name}"]/parent::button
-    Click Button    xpath=//label[@title="${modify_smb_share_data.access_zone} : ${modify_smb_share_data.name}"]/parent::button
-    ${description}    Get Text  xpath=//th[text()="description"]/following-sibling::td
-    Should Be Equal    ${description}    ${modify_smb_share_data.description}
-    ${path}    Get Text  xpath=//th[text()="path"]/following-sibling::td
-    Should Be Equal    ${path}    ${modify_smb_share_data.path}
-    ${zone}    Get Text  xpath=//th[text()="zone"]/following-sibling::td
-    Should Be Equal    ${zone}    ${modify_smb_share_data.access_zone}
-    ${name}    Get Text  xpath=//th[text()="name"]/following-sibling::td
-    Should Be Equal    ${name}    ${modify_smb_share_data.name}
-    ${createPermissions}    Get Text  xpath=//th[text()="createPermissions"]/following-sibling::td
-    Should Be Equal    ${createPermissions}    ${modify_smb_share_data.directory_acls}

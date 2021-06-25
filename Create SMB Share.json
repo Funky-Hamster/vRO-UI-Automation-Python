@@ -1,7 +1,7 @@
 {
     "workflows": [
         {
-            "name": "Modify SMB Share",
+            "name": "Create SMB Share",
             "content": {
                 "tabs": [
                     {
@@ -32,28 +32,9 @@
                                 "hidden": false
                             },
                             {
-                                "label": "SMB share",
+                                "label": "Name",
                                 "id": "name",
                                 "for": "input_name",
-                                "type": "dropdown",
-                                "data": [
-                                    "",
-                                    "hui-smb-modify",
-                                    "yian_smb_share_1"
-                                ],
-                                "hidden": false
-                            },
-                            {
-                                "label": "SMB share object",
-                                "id": "smbShareObj",
-                                "for": "input_smbShareObj",
-                                "type": "value-picker",
-                                "hidden": true
-                            },
-                            {
-                                "label": "Name",
-                                "id": "newSmbShareName",
-                                "for": "input_newSmbShareName",
                                 "type": "text-field",
                                 "hidden": false
                             },
@@ -70,6 +51,13 @@
                                 "for": "input_path",
                                 "type": "text-field",
                                 "hidden": false
+                            },
+                            {
+                                "label": "Create SMB share directory if it does not exist",
+                                "id": "createIfNotExist",
+                                "for": "input_createIfNotExist",
+                                "type": "checkbox",
+                                "hidden": false
                             }
                         ]
                     },
@@ -83,9 +71,8 @@
                                 "type": "dropdown",
                                 "data": [
                                     "",
-                                    "Default acl",
-                                    "Inherit mode bits",
-                                    "Use create mask and mode"
+                                    "Apply Windows default ACLs",
+                                    "Do not change existing permissions"
                                 ],
                                 "hidden": false
                             }
@@ -102,7 +89,7 @@
                                 "hidden": false
                             },
                             {
-                                "label": "Auto-create directories",
+                                "label": "Create home directories for users when they first access the share path with expansion variables.",
                                 "id": "autoCreateDir",
                                 "for": "input_autoCreateDir",
                                 "type": "checkbox",
@@ -114,10 +101,10 @@
                         "name": "Continuous Availability",
                         "content": [
                             {
-                                "label": "Continuous Availability (non-editable)",
+                                "label": "Continuous Availability",
                                 "id": "enableContinuousAvailability",
                                 "for": "input_enableContinuousAvailability",
-                                "type": "text-field",
+                                "type": "checkbox",
                                 "hidden": false
                             }
                         ]

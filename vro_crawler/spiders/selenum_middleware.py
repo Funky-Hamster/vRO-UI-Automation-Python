@@ -94,6 +94,8 @@ class SeleniumMiddleware(object):
                 time.sleep(0.5)
                 chosen_workflow_node = y_ele
                 workflow_name = chosen_workflow_node.text
+                if workflow_name.find('Modify SMB') != -1:
+                    break
         self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
         time.sleep(2)
         browser.find_element(*self.workflow_run_button).click()
@@ -114,7 +116,19 @@ class SeleniumMiddleware(object):
                         labels = cf_potential.find_elements(*self.vro_section_label)
                         for label in labels:
                             if label.get_attribute("textContent") != "":
-                                page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]})
+                                page_array_data = {"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]}
+                                # page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]})
+                                if (cf_potential.tag_name[3:].find('dropdown') != -1) | (cf_potential.tag_name[3:].find('multi-select') != -1):
+                                    options = cf_potential.find_elements(*self.vro_section_select_option)
+                                    option_data = []
+                                    for option in options:
+                                        option_data.append(option.get_attribute("textContent"))
+                                    page_array_data['data'] = option_data
+                                if cf_potential.get_attribute("hidden") != None:
+                                    page_array_data['hidden'] = True
+                                else:
+                                    page_array_data['hidden'] = False
+                                page_array.append(page_array_data)
                                 break
                         break
             workflow_content_struct["tabs"].append({"name": tabs[i].text, "content": page_array})
