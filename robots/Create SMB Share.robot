@@ -16,9 +16,11 @@ Workflow Create SMB Share Basic
     Click Element    xpath=//a[text()="General"]
     Sleep    10
     Wait Until Element Is Visible    id=input_clusterName
-    Select From List By Label        Sleep    10
+    Select From List By Label    id=input_clusterName    ${create_smb_share_data.cluster}
+    Sleep    10
     Wait Until Element Is Visible    id=input_zone
-    Select From List By Label        Sleep    10
+    Select From List By Label    id=input_zone    ${create_smb_share_data.access_zone}
+    Sleep    10
     Wait Until Element Is Visible    id=input_name
     Input Text    id=input_name    ${create_smb_share_data.name}
     Sleep    10
@@ -32,7 +34,8 @@ Workflow Create SMB Share Basic
     Click Element    xpath=//a[text()="Directory ACLs"]
     Sleep    10
     Wait Until Element Is Visible    id=input_dirACL
-    Select From List By Label        Click Element    xpath=//a[text()="Home directory provisioning"]
+    Select From List By Label    id=input_dirACL    ${create_smb_share_data.directory_acls}
+    Click Element    xpath=//a[text()="Home directory provisioning"]
     Sleep    10
     Run Keyword If    ${create_smb_share_data.allow_variable_expansion} == True    Click Element    xpath=//label[@for="input_allowVarExp"]
     Click Element    xpath=//a[text()="Continuous Availability"]
@@ -54,8 +57,6 @@ Workflow Create SMB Share Basic
     Click Element    xpath=//a[text()="File Filter"]
     Sleep    10
     Run Keyword If    ${create_smb_share_data.enable_file_filters} == True    Click Element    xpath=//label[@for="input_enableFileFilters"]
-    Wait Until Element Is Enabled    xpath=//*[@id="fileFilterExtensions"]/div/div[2]/div[1]/input
-    Input Text    xpath=//*[@id="fileFilterExtensions"]/div/div[2]/div[1]/input    ${create_smb_share_data.file_filter_extensions}
     No Errors
     Click Button    id=${powerscale_create_smb_share_po['run_button_id']}
     Wait Until Element Is Visible    xpath=//div[@id='wfStatusInfo']//span
@@ -83,5 +84,3 @@ Validate Workflow Create SMB Share Basic
     Should Be Equal    ${zone}    ${create_smb_share_data.access_zone}
     ${name}    Get Text  xpath=//th[text()="name"]/following-sibling::td
     Should Be Equal    ${name}    ${create_smb_share_data.name}
-    ${createPermissions}    Get Text  xpath=//th[text()="createPermissions"]/following-sibling::td
-    Should Be Equal    ${createPermissions}    ${create_smb_share_data.directory_acls}

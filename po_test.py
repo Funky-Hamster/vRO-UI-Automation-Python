@@ -1,4 +1,0 @@
-from Config.PowerScale.property import *
-
-powerscale_modify_smb_share_po = {'general_xpath': '//a[text()="General"]', 'clusterName': 'input_clusterName', 'zone': 'input_zone', 'name': 'input_name', 'smbShareObj': 'input_smbShareObj', 'newSmbShareName': 'input_newSmbShareName', 'description': 'input_description', 'path': 'input_path', 'directory_acls_xpath': '//a[text()="Directory ACLs"]', 'dirACL': 'input_dirACL', 'home_directory_provisioning_xpath': '//a[text()="Home directory provisioning"]',
-                                  'allowVarExp': 'input_allowVarExp', 'autoCreateDir': 'input_autoCreateDir', 'continuous_availability_xpath': '//a[text()="Continuous Availability"]', 'enableContinuousAvailability': 'input_enableContinuousAvailability', 'members_xpath': '//a[text()="Members"]', 'file_filter_xpath': '//a[text()="File Filter"]', 'enableFileFilters': 'input_enableFileFilters', 'fileFilterType': 'input_fileFilterType', 'confirm-btn': 'confirm-btn'}
