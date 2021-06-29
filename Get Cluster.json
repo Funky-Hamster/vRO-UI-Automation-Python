@@ -1,0 +1,1 @@
+{"workflows": [{"name": "Get Cluster", "content": {"tabs": [{"name": "", "content": [{"label": "Registration/connection name", "id": "connectionName", "for": "input_connectionName", "type": "dropdown", "data": ["", "PowerScale6199"], "hidden": false}]}]}}]}

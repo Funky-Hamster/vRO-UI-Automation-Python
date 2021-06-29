@@ -1,0 +1,1 @@
+{"workflows": [{"name": "Unregister Cluster", "content": {"tabs": [{"name": "", "content": [{"label": "PowerScale cluster", "id": "cluster", "for": "input_cluster", "type": "dropdown", "data": ["", "PowerScale6199"], "hidden": false}]}]}}]}

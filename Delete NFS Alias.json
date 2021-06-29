@@ -1,0 +1,50 @@
+{
+    "workflows": [
+        {
+            "name": "Delete NFS Alias",
+            "content": {
+                "tabs": [
+                    {
+                        "name": "",
+                        "content": [
+                            {
+                                "label": "Cluster",
+                                "id": "cluster",
+                                "for": "input_cluster",
+                                "type": "dropdown",
+                                "data": [
+                                    "",
+                                    "PowerScale6199"
+                                ],
+                                "hidden": false
+                            },
+                            {
+                                "label": "Access zone",
+                                "id": "zone",
+                                "for": "input_zone",
+                                "type": "dropdown",
+                                "data": [
+                                    "",
+                                    "System",
+                                    "zone1",
+                                    "zone2"
+                                ],
+                                "hidden": false
+                            },
+                            {
+                                "label": "NFS alias to delete",
+                                "id": "nfsAlias",
+                                "for": "input_nfsAlias",
+                                "type": "dropdown",
+                                "data": [
+                                    ""
+                                ],
+                                "hidden": false
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

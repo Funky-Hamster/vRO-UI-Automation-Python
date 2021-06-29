@@ -1,0 +1,77 @@
+{
+    "workflows": [
+        {
+            "name": "Delete NFS Export",
+            "content": {
+                "tabs": [
+                    {
+                        "name": "",
+                        "content": [
+                            {
+                                "label": "Cluster",
+                                "id": "cluster",
+                                "for": "input_cluster",
+                                "type": "dropdown",
+                                "data": [
+                                    "",
+                                    "PowerScale6199"
+                                ],
+                                "hidden": false
+                            },
+                            {
+                                "label": "Access zone",
+                                "id": "zone",
+                                "for": "input_zone",
+                                "type": "dropdown",
+                                "data": [
+                                    "",
+                                    "System",
+                                    "zone1",
+                                    "zone2"
+                                ],
+                                "hidden": false
+                            },
+                            {
+                                "label": "JSON string of NFS export summary information",
+                                "id": "summaries",
+                                "for": "input_summaries",
+                                "type": "dropdown",
+                                "data": [
+                                    ""
+                                ],
+                                "hidden": true
+                            },
+                            {
+                                "label": "NFS export paths information",
+                                "id": "pathsInfo",
+                                "for": "input_pathsInfo",
+                                "type": "dropdown",
+                                "data": [
+                                    ""
+                                ],
+                                "hidden": false
+                            },
+                            {
+                                "label": "NFS export id",
+                                "id": "id",
+                                "for": "input_id",
+                                "type": "dropdown",
+                                "data": [
+                                    ""
+                                ],
+                                "hidden": false
+                            },
+                            {
+                                "label": "WARNING: You need to manually unmount the export on your clients before running the workflow.\nHave you unmounted the export on your clients?",
+                                "id": "confirm",
+                                "for": "input_confirm",
+                                "type": "checkbox",
+                                "hidden": true
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

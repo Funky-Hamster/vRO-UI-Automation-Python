@@ -1,0 +1,1 @@
+{"workflows": [{"name": "Delete SMB Session by Computer", "content": {"tabs": [{"name": "", "content": [{"label": "Cluster", "id": "clusterName", "for": "input_clusterName", "type": "dropdown", "data": ["", "PowerScale6199"], "hidden": false}, {"label": "Client IP", "id": "computer", "for": "input_computer", "type": "dropdown", "data": [""], "hidden": false}]}]}}]}

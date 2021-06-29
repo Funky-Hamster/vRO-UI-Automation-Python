@@ -1,0 +1,1 @@
+{"workflows": [{"name": "Get SMB Open Files", "content": {"tabs": [{"name": "", "content": [{"label": "Cluster", "id": "cluster", "for": "input_cluster", "type": "dropdown", "data": ["", "PowerScale6199"], "hidden": false}]}]}}]}

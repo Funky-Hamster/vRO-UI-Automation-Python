@@ -1,0 +1,1 @@
+{"workflows": [{"name": "List Quotas", "content": {"tabs": [{"name": "", "content": [{"label": "Cluster (Workflow won't proceed if selected cluster does not have SmartQuotas enabled.)", "id": "cluster", "for": "input_cluster", "type": "dropdown", "data": ["", "PowerScale6199"], "hidden": false}]}]}}]}

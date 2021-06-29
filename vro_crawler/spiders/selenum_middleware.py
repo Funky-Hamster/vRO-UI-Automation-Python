@@ -94,49 +94,51 @@ class SeleniumMiddleware(object):
                 time.sleep(0.5)
                 chosen_workflow_node = y_ele
                 workflow_name = chosen_workflow_node.text
-                if workflow_name.find('Modify SMB') != -1:
-                    break
-        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
-        time.sleep(2)
-        browser.find_element(*self.workflow_run_button).click()
-        time.sleep(8)
-        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_data_loading_spinner))
-        workflow_content = browser.find_elements(*self.workflow_content)[0]
-        tabs = workflow_content.find_elements(*self.vro_ul)[0].find_elements(*self.vro_li)
-        tab_pages = workflow_content.find_elements(*self.vro_tab_page)
-        workflow_content_struct = dict()
-        workflow_content_struct["tabs"] = []
-        for i in range(len(tabs)):
-            page_array = []
-            page_sections = tab_pages[i].find_elements(*self.vro_section)
-            for section in page_sections:
-                cf_potentials = section.find_elements(*self.vro_ng_star_class)
-                for cf_potential in cf_potentials:
-                    if (cf_potential.tag_name != "cf-section") & (cf_potential.tag_name.find("cf-") != -1):
-                        labels = cf_potential.find_elements(*self.vro_section_label)
-                        for label in labels:
-                            if label.get_attribute("textContent") != "":
-                                page_array_data = {"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]}
-                                # page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]})
-                                if (cf_potential.tag_name[3:].find('dropdown') != -1) | (cf_potential.tag_name[3:].find('multi-select') != -1):
-                                    options = cf_potential.find_elements(*self.vro_section_select_option)
-                                    option_data = []
-                                    for option in options:
-                                        option_data.append(option.get_attribute("textContent"))
-                                    page_array_data['data'] = option_data
-                                if cf_potential.get_attribute("hidden") != None:
-                                    page_array_data['hidden'] = True
-                                else:
-                                    page_array_data['hidden'] = False
-                                page_array.append(page_array_data)
+                # if workflow_name.find('Modify SMB') != -1:
+                #     break
+                if workflow_name.find('Clusters') != -1:
+                    continue
+                self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
+                time.sleep(2)
+                browser.find_element(*self.workflow_run_button).click()
+                time.sleep(8)
+                self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_data_loading_spinner))
+                workflow_content = browser.find_elements(*self.workflow_content)[0]
+                tabs = workflow_content.find_elements(*self.vro_ul)[0].find_elements(*self.vro_li)
+                tab_pages = workflow_content.find_elements(*self.vro_tab_page)
+                workflow_content_struct = dict()
+                workflow_content_struct["tabs"] = []
+                for i in range(len(tabs)):
+                    page_array = []
+                    page_sections = tab_pages[i].find_elements(*self.vro_section)
+                    for section in page_sections:
+                        cf_potentials = section.find_elements(*self.vro_ng_star_class)
+                        for cf_potential in cf_potentials:
+                            if (cf_potential.tag_name != "cf-section") & (cf_potential.tag_name.find("cf-") != -1):
+                                labels = cf_potential.find_elements(*self.vro_section_label)
+                                for label in labels:
+                                    if label.get_attribute("textContent") != "":
+                                        page_array_data = {"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]}
+                                        # page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]})
+                                        if (cf_potential.tag_name[3:].find('dropdown') != -1) | (cf_potential.tag_name[3:].find('multi-select') != -1):
+                                            options = cf_potential.find_elements(*self.vro_section_select_option)
+                                            option_data = []
+                                            for option in options:
+                                                option_data.append(option.get_attribute("textContent"))
+                                            page_array_data['data'] = option_data
+                                        if cf_potential.get_attribute("hidden") != None:
+                                            page_array_data['hidden'] = True
+                                        else:
+                                            page_array_data['hidden'] = False
+                                        page_array.append(page_array_data)
+                                        break
                                 break
-                        break
-            workflow_content_struct["tabs"].append({"name": tabs[i].text, "content": page_array})
-        print(workflow_content_struct)
-        workflow_struct = dict()
-        workflow_struct["workflows"] = []
-        workflow_struct["workflows"].append({"name": workflow_name, "content": workflow_content_struct})
-        self.dict_to_json_write_file(workflow_struct, workflow_name)
+                    workflow_content_struct["tabs"].append({"name": tabs[i].text, "content": page_array})
+                print(workflow_content_struct)
+                workflow_struct = dict()
+                workflow_struct["workflows"] = []
+                workflow_struct["workflows"].append({"name": workflow_name, "content": workflow_content_struct})
+                self.dict_to_json_write_file(workflow_struct, workflow_name)
         return HtmlResponse(url=browser.current_url, body=workflow_content.get_attribute("outerHTML"), encoding="utf-8", request=request)
 
     def dict_to_json_write_file(self, dict, name):

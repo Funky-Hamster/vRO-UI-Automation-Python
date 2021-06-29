@@ -1,0 +1,1 @@
+{"workflows": [{"name": "Get NFS Exports", "content": {"tabs": [{"name": "", "content": [{"label": "Cluster", "id": "cluster", "for": "input_cluster", "type": "dropdown", "data": ["", "PowerScale6199"], "hidden": false}, {"label": "Access zone", "id": "zone", "for": "input_zone", "type": "dropdown", "data": ["", "System", "zone1", "zone2"], "hidden": false}]}]}}]}

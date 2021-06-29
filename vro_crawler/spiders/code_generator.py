@@ -26,7 +26,7 @@ class CodeGenerator:
         'zone': 'access_zone',
         # 'members': 
         'name': 'name',
-        'createPermissions': 'directory_acls'
+        # 'createPermissions': 'directory_acls'
     }
 
     def generate_page_object(self):
@@ -142,23 +142,23 @@ class CodeGenerator:
             for tab in tabs:
                 file_handle.write('    Click Element    xpath=' + '//a[text()="' + tab['name'] + '"]\n')
                 for row in tab['content']:
+                    if row['hidden'] == True:
+                        continue
                     if (row['for'] != None) & (row['label'].find('non-editable') == -1) & (row['type'] != 'multi-select') & (row['type'] != 'array'):
                         # TODO: find out a way to get the logic of hidden and reveal
-                        if row['hidden'] == True:
-                            continue
                         file_handle.write('    Sleep    10\n')
                         if row['type'] != 'checkbox':
                             file_handle.write('    Wait Until Element Is Visible    id=' + row['for'] + '\n')
                         if (row['type'] == 'dropdown') | (row['type'] == 'value-picker'):
                             file_handle.write('    Select From List By Label    ')
+                            file_handle.write('id=' + row['for'] + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '}\n')
                         if row['type'] == 'checkbox':
                             file_handle.write('    Run Keyword If    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '} == True    Click Element    xpath=//label[@for="' + row['for'] + '"]\n')
                         if (row['type'] == 'text-field'):
                             file_handle.write('    Input Text    ')
+                            file_handle.write('id=' + row['for'] + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '}\n')
                         else:
                             continue
-                        file_handle.write('id=' + row['for'] + '    ${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '}\n')
-                    
                     elif (row['type'] == 'multi-select'):
                         file_handle.write('    Click Element    xpath=//label[contains(text(),"' + row['label'].strip() + '")]/parent::div/parent::div//option[text()="${' + data + '.' + row['label'].strip().replace("-", "_").replace(" ", "_").lower() + '}"]\n')
                     elif (row['type'] == 'array'):
@@ -198,7 +198,7 @@ class CodeGenerator:
                     file_handle.write('    ${' + title + '}    Get Text  xpath=//th[text()="' + title + '"]/following-sibling::td\n')
                     file_handle.write('    Should Be Equal    ${' + title + '}    ${' + data + '.' + self.inventory_to_workflow_data_title[title] + '}\n')
 
-    def generate_test_case_basic_data_format(self, workflow: str):
+    def generate_test_case_basic_data_format(self, platform: str = 'PowerScale', workflow: str = 'Create SMB Share'):
         snake_case_workflow = workflow.strip().replace(" ", "_").lower()
         data = snake_case_workflow + '_data'
         f = open(workflow + '.json')
@@ -210,16 +210,31 @@ class CodeGenerator:
             # Wait for each element and make selection or input
             for tab in tabs:
                 for row in tab['content']:
+                    if row['hidden'] == True:
+                        continue
                     file_handle.write('    \'' + row['label'].strip().replace(" ", "_").replace("-", "_").lower() + '\': ')
-                    if (row['type'] == 'dropdown') | (row['type'] == 'multi-select'):
-                        file_handle.write(str(row['data']))
-                    elif row['type'] != 'array':
-                        file_handle.write('\'\'')
-                    elif row['type'] == 'array':
-                        file_handle.write('[]')
+                    # if (row['type'] == 'dropdown') | (row['type'] == 'multi-select'):
+                    #     file_handle.write(str(row['data']))
+                    # elif row['type'] != 'array':
+                    #     file_handle.write('\'\'')
+                    # elif row['type'] == 'array':
+                    #     file_handle.write('[]')
+                    file_handle.write((platform + '_' + self.pascal_case_to_snake_case(row['id']).replace("a_c_l", "acl")).upper())
                     file_handle.write(',\n')
             file_handle.write('}')
         return 
+
+    def generate_config_vars(self, platform = 'PowerScale'):
+        f = open('Create SMB Share' + '.json')
+        self.workflow_data = json.load(f)
+        f.close()
+        with open('create_smb_share_config.py', 'w') as file_handle:
+            tabs = self.workflow_data['workflows'][0]['content']['tabs']
+            for tab in tabs:
+                for row in tab['content']:
+                    file_handle.write('# label: ' + row['label'] + ', id: ' + row['id'].strip() + '\n')
+                    file_handle.write((platform + '_' + self.pascal_case_to_snake_case(row['id']).replace('a_c_l', 'acl')).upper() + ' = \n')
+        return
     
     def find_storage(self, storage_array, data: dict):
         return 'cluster'
