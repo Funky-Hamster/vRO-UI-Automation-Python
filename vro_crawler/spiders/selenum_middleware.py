@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from scrapy.http.response.text import TextResponse
 from selenium.webdriver.remote.webelement import WebElement
+from selenium import webdriver
 
 class SeleniumMiddleware(object):
     def __init__(self):
@@ -51,40 +52,45 @@ class SeleniumMiddleware(object):
         self.th_tag = (By.TAG_NAME, "th")
         self.td_tag = (By.TAG_NAME, "td")
 
-    def fetch_workflows(self, request, browser):
+        self.browser: webdriver
+
+    def fetch_workflows(self, request, browser, platform='PowerMax'):
         self.explicit_wait = WebDriverWait(browser, 120)
-        browser.get(request.url)
+        self.browser = browser
+        self.browser.get(request.url)
         self.explicit_wait.until(EC.visibility_of_element_located(self.login_page_title))
-        browser.find_element(*self.username).send_keys('Administrator@vsphere.local')
-        browser.find_element(*self.password).send_keys('Password123!')
+        self.browser.find_element(*self.username).send_keys('Administrator@vsphere.local')
+        self.browser.find_element(*self.password).send_keys('Password123!')
         self.explicit_wait.until(EC.visibility_of_element_located(self.login_btn))
-        browser.find_element(*self.login_btn).click()
+        self.browser.find_element(*self.login_btn).click()
         self.explicit_wait.until(EC.visibility_of_element_located(self.vro_dashboard_area))
-        browser.get(request.url)
+        self.browser.get(request.url)
         self.explicit_wait.until(EC.visibility_of_element_located(self.vro_dashboard_area))
         self.explicit_wait.until(EC.visibility_of_element_located(self.vro_workflow_item_area))
         self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
         self.explicit_wait.until(EC.visibility_of_element_located(self.tree_view_icon))
-        browser.find_element(*self.tree_view_icon).click()
+        self.browser.find_element(*self.tree_view_icon).click()
         self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
         time.sleep(10)
-        eles = browser.find_elements(*self.vro_tree_node)
+        eles = self.browser.find_elements(*self.vro_tree_node)
         for ele in eles:
             if (ele.text == "Library"):
                 ele.find_element(*self.expand_btn).click()
                 library_node = ele
         time.sleep(3)
+        # root node of the plugin
+        plugin_root_node = None
         library_eles = library_node.find_elements(*self.vro_tree_node)
         for ele in library_eles:
-            if (ele.text.find("Dell EMC PowerScale") != -1):
+            if (ele.text.find("Dell EMC " + platform) != -1):
                 ele.find_element(*self.expand_btn).click()
-                powerscale_node = ele
+                plugin_root_node = ele
         time.sleep(3)
-        powerscale_eles = powerscale_node.find_elements(*self.vro_tree_node)
+        plugin_eles = plugin_root_node.find_elements(*self.vro_tree_node)
         workflow_name = "test"
         workflow_struct = dict()
         workflow_struct["workflows"] = []
-        for ele in powerscale_eles:
+        for ele in plugin_eles:
             print(ele.text)
             ele.find_element(*self.expand_btn).click()
             time.sleep(2)
@@ -92,25 +98,24 @@ class SeleniumMiddleware(object):
             y_eles = y_node.find_elements(*self.vro_tree_node)
             for y_ele in y_eles:
                 print(" " + y_ele.text)
+                # click workflow
                 y_ele.find_element(*self.treenode_link).click()
                 time.sleep(0.5)
                 chosen_workflow_node = y_ele
+                # fetch workflow
                 workflow_name = chosen_workflow_node.text
-                # if workflow_name.find('Modify SMB') != -1:
-                #     break
-                if workflow_name.find('Clusters') != -1:
+                if workflow_name.find('List') != -1:
                     continue
                 self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
                 time.sleep(2)
-                browser.find_element(*self.workflow_run_button).click()
+                self.browser.find_element(*self.workflow_run_button).click()
                 time.sleep(8)
                 self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_data_loading_spinner))
-                workflow_content = browser.find_elements(*self.workflow_content)[0]
+                workflow_content = self.browser.find_elements(*self.workflow_content)[0]
                 tabs = workflow_content.find_elements(*self.vro_ul)[0].find_elements(*self.vro_li)
                 tab_pages = workflow_content.find_elements(*self.vro_tab_page)
                 workflow_content_struct = dict()
                 workflow_content_struct["tabs"] = []
-
                 for i in range(len(tabs)):
                     page_array = []
                     page_sections = tab_pages[i].find_elements(*self.vro_section)
@@ -122,13 +127,6 @@ class SeleniumMiddleware(object):
                                 for label in labels:
                                     if label.get_attribute("textContent") != "":
                                         page_array_data = {"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]}
-                                        # page_array.append({"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]})
-                                        if (cf_potential.tag_name[3:].find('dropdown') != -1) | (cf_potential.tag_name[3:].find('multi-select') != -1):
-                                            options = cf_potential.find_elements(*self.vro_section_select_option)
-                                            option_data = []
-                                            for option in options:
-                                                option_data.append(option.get_attribute("textContent"))
-                                            page_array_data['data'] = option_data
                                         if cf_potential.get_attribute("hidden") != None:
                                             page_array_data['hidden'] = True
                                         else:
@@ -139,27 +137,135 @@ class SeleniumMiddleware(object):
                     workflow_content_struct["tabs"].append({"name": tabs[i].text, "content": page_array})
                 print(workflow_content_struct)
                 workflow_struct["workflows"].append({"name": workflow_name, "content": workflow_content_struct})
-        self.dict_to_json_write_file(workflow_struct, 'PowerScale Workflows')
-        return HtmlResponse(url=browser.current_url, body=workflow_content.get_attribute("outerHTML"), encoding="utf-8", request=request)
+        self.dict_to_json_write_file(workflow_struct, platform + ' Workflows')
+        return HtmlResponse(url=self.browser.current_url, body=workflow_content.get_attribute("outerHTML"), encoding="utf-8", request=request)
+
+    def fetch_workflows_in_tree(self, request, browser, platform='PowerMax'):
+        self.explicit_wait = WebDriverWait(browser, 120)
+        self.browser = browser
+        self.browser.get(request.url)
+        self.explicit_wait.until(EC.visibility_of_element_located(self.login_page_title))
+        self.browser.find_element(*self.username).send_keys('Administrator@vsphere.local')
+        self.browser.find_element(*self.password).send_keys('Password123!')
+        self.explicit_wait.until(EC.visibility_of_element_located(self.login_btn))
+        self.browser.find_element(*self.login_btn).click()
+        self.explicit_wait.until(EC.visibility_of_element_located(self.vro_dashboard_area))
+        self.browser.get(request.url)
+        self.explicit_wait.until(EC.visibility_of_element_located(self.vro_dashboard_area))
+        self.explicit_wait.until(EC.visibility_of_element_located(self.vro_workflow_item_area))
+        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
+        self.explicit_wait.until(EC.visibility_of_element_located(self.tree_view_icon))
+        self.browser.find_element(*self.tree_view_icon).click()
+        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
+        time.sleep(10)
+        eles = self.browser.find_elements(*self.vro_tree_node)
+        for ele in eles:
+            if (ele.text == "Library"):
+                ele.find_element(*self.expand_btn).click()
+                library_node = ele
+        time.sleep(3)
+        # root node of the plugin
+        plugin_root_node = None
+        library_eles = library_node.find_elements(*self.vro_tree_node)
+        for ele in library_eles:
+            if (ele.text.find("Dell EMC " + platform) != -1):
+                ele.find_element(*self.expand_btn).click()
+                plugin_root_node = ele
+        time.sleep(3)
+        workflow_name = "test"
+        workflow_struct = dict()
+        workflow_struct["workflows"] = []
+        self.preorder(tree_node=plugin_root_node, workflow_struct=workflow_struct)
+        self.dict_to_json_write_file(workflow_struct, platform + ' Workflows')
+        workflow_content = self.browser.find_elements(*self.workflow_content)[0]
+        return HtmlResponse(url=self.browser.current_url, body=workflow_content.get_attribute("outerHTML"), encoding="utf-8", request=request)
+
+        
+
+    def preorder(self, tree_node: WebElement, workflow_struct: dict):
+        next_arr = tree_node.find_elements(*self.vro_tree_node)
+        if len(next_arr) == 0:
+            print('DTEST ' + tree_node.text)
+            return
+        print(next_arr)
+        for node in next_arr:
+            shape = node.find_elements(*self.vro_clr_icon)[0].get_attribute('shape')
+            if shape == 'organization':
+                print(node.text)
+                # if node.text.find('Provision Volumes') != -1:
+                #     continue
+                self.click_workflow(tree_node=node, workflow_struct=workflow_struct)
+            # the first clr_icon with expand option may not be folder shape
+            elif (shape == 'folder') | (shape == 'caret'):
+                # expand
+                node.find_element(*self.expand_btn).click()
+                time.sleep(2)
+                self.preorder(node, workflow_struct)
+        return
+    
+    def click_workflow(self, tree_node: WebElement, workflow_struct: dict):
+        chosen_workflow_node = tree_node
+        # fetch workflow
+        workflow_name = chosen_workflow_node.text
+        if workflow_name.find('List') != -1:
+            return
+        # if workflow_name.find('Provision Volumes') != -1:
+        #     return
+        tree_node.find_element(*self.treenode_link).click()
+        time.sleep(0.5)
+        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
+        time.sleep(2)
+        self.browser.find_element(*self.workflow_run_button).click()
+        time.sleep(8)
+        self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_data_loading_spinner))
+        workflow_content = self.browser.find_elements(*self.workflow_content)[0]
+        tabs = workflow_content.find_elements(*self.vro_ul)[0].find_elements(*self.vro_li)
+        tab_pages = workflow_content.find_elements(*self.vro_tab_page)
+        workflow_content_struct = dict()
+        workflow_content_struct["tabs"] = []
+        for i in range(len(tabs)):
+            page_array = []
+            page_sections = tab_pages[i].find_elements(*self.vro_section)
+            for section in page_sections:
+                cf_potentials = section.find_elements(*self.vro_ng_star_class)
+                for cf_potential in cf_potentials:
+                    if (cf_potential.tag_name != "cf-section") & (cf_potential.tag_name.find("cf-") != -1):
+                        labels = cf_potential.find_elements(*self.vro_section_label)
+                        for label in labels:
+                            if label.get_attribute("textContent") != "":
+                                page_array_data = {"label": label.get_attribute("textContent"), "id":  cf_potential.get_attribute("id"), "for": label.get_attribute("for"), "type": cf_potential.tag_name[3:]}
+                                if cf_potential.get_attribute("hidden") != None:
+                                    page_array_data['hidden'] = True
+                                else:
+                                    page_array_data['hidden'] = False
+                                page_array.append(page_array_data)
+                                break
+                        break
+            workflow_content_struct["tabs"].append({"name": tabs[i].text, "content": page_array})
+        print(workflow_content_struct)
+        workflow_struct["workflows"].append({"name": workflow_name, "content": workflow_content_struct})
+
+
 
     def dict_to_json_write_file(self, dict, name):
         with open(name + '.json', 'w') as f:
             json.dump(dict, f)
 
     def fetch_inventory(self, request, browser):
-        self.explicit_wait = WebDriverWait(browser, 120)
-        browser.get(request.url)
+        self.browser = browser
+        self.explicit_wait = WebDriverWait(self.browser, 120)
+        self.browser.get(request.url)
         self.explicit_wait.until(EC.visibility_of_element_located(self.login_page_title))
-        browser.find_element(*self.username).send_keys('Administrator@vsphere.local')
-        browser.find_element(*self.password).send_keys('Password123!')
+        self.browser.find_element(*self.username).send_keys('Administrator@vsphere.local')
+        self.browser.find_element(*self.password).send_keys('Password123!')
         self.explicit_wait.until(EC.visibility_of_element_located(self.login_btn))
-        browser.find_element(*self.login_btn).click()
+        self.browser.find_element(*self.login_btn).click()
         self.explicit_wait.until(EC.visibility_of_element_located(self.vro_dashboard_area))
-        browser.get(request.url)
+        self.browser.get(request.url)
         self.explicit_wait.until(EC.visibility_of_element_located(self.vro_inventory_node_class))
         time.sleep(3)
         # # expanding
-        eles = browser.find_element(*self.inventory_tree_id).find_elements(*self.inventory_tree_node_tag)
+        eles = self.browser.find_element(*self.inventory_tree_id).find_elements(*self.inventory_tree_node_tag)
         inventories = []
         plugin_name = "test"
         for ele in eles:
@@ -189,7 +295,7 @@ class SeleniumMiddleware(object):
                         # print(smb.text)
                         smb.find_element(*self.treenode_link).click()
                         time.sleep(0.5)
-                        tbody = browser.find_elements(*self.tbody_tag)[0]
+                        tbody = self.browser.find_elements(*self.tbody_tag)[0]
                         trs = tbody.find_elements(*self.tr_tag)
                         smb_dict = []
                         for tr in trs:
@@ -201,4 +307,4 @@ class SeleniumMiddleware(object):
             clusters.append(cluster_dict)
         print(str(clusters))
         self.dict_to_json_write_file(clusters, "PowerScale Inventory")
-        return HtmlResponse(url=browser.current_url, body=powerscale_node.get_attribute("outerHTML"), encoding="utf-8", request=request)
+        return HtmlResponse(url=self.browser.current_url, body=powerscale_node.get_attribute("outerHTML"), encoding="utf-8", request=request)

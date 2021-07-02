@@ -150,7 +150,6 @@ class CodeGenerator:
             for w in workflows:
                 if w['name'] == workflow:
                     tabs = w['content']['tabs']
-            # tabs = self.workflow_data['workflows'][0]['content']['tabs']
             # wait for each element and make selection or input
             for tab in tabs:
                 file_handle.write('    Click Element    xpath=' + '//a[text()="' + tab['name'] + '"]\n')
@@ -216,9 +215,6 @@ class CodeGenerator:
                     file_handle.write('    Should Be Equal    ${' + title + '}    ${' + data + '.' + self.inventory_to_workflow_data_title[title] + '}\n')
 
     def generate_test_case_basic_data_format(self, platform: str = 'PowerScale'):
-        # f = open(workflow + '.json')
-        # self.workflow_data = json.load(f)
-        # f.close()
         workflows = self.workflow_data['workflows']
         for workflow in workflows:
             snake_case_workflow = workflow['name'].strip().replace(" ", "_").lower()
@@ -233,12 +229,6 @@ class CodeGenerator:
                         if row['hidden'] == True:
                             continue
                         file_handle.write('    \'' + row['label'].strip().replace(" ", "_").replace("-", "_").lower() + '\': ')
-                            # if (row['type'] == 'dropdown') | (row['type'] == 'multi-select'):
-                            #     file_handle.write(str(row['data']))
-                            # elif row['type'] != 'array':
-                            #     file_handle.write('\'\'')
-                            # elif row['type'] == 'array':
-                            #     file_handle.write('[]')
                         file_handle.write((platform + '_' + self.pascal_case_to_snake_case(row['id']).replace("a_c_l", "acl")).upper())
                         file_handle.write(',\n')
                 file_handle.write('}')
@@ -284,8 +274,6 @@ class CodeGenerator:
         if platform.find('PowerScale') != -1:
             if resource.find('SMB') != -1:
                 return '${' + data_var + '.access_zone} : ${' + data_var + '.name}'
-        #         return data['zone'] + ' : ' + data['name']
-        # return ''
 
     def dict_to_json_write_file(self, dict_obj: dict, name: str):
         with open(name + '.json', 'w') as f:
