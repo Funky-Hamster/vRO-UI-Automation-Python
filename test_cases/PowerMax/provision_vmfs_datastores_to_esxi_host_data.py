@@ -1,0 +1,15 @@
+provision_vmfs_datastores_to_esxi_host_data = {
+    'esxi_host': POWERMAX_ESXI_HOST,
+    'datastore_name_(for_multiple_datastores,_the_name_will_be_appended_with_volume_ids)': POWERMAX_DATASTORE_NAME,
+    'vmfs_version': POWERMAX_VMFS_VERSION,
+    'powermax_array': POWERMAX_POWER_MAX_ARRAY,
+    'new_host?': POWERMAX_CREATE_HOST,
+    'existing_host_on_the_array': POWERMAX_EXISTING_HOST,
+    'new_masking_view?': POWERMAX_CREATE_MASKING_VIEW,
+    'exisiting_storage_group_name': POWERMAX_EXISTING_STORAGE_GROUP,
+    'new_volumes?': POWERMAX_CREATE_VOLUMES,
+    'number_of_volumes_to_be_created_on_array': POWERMAX_NUMBER_OF_VOLUMES,
+    'capacity_unit_in_cyl/mb/gb/tb': POWERMAX_CAPACITY_UNIT,
+    'size_of_each_volume': POWERMAX_VOLUME_SIZE,
+    'user_friendly_names_for_the_volumes_to_be_created_on_array': POWERMAX_VOLUME_IDENTIFIER,
+}

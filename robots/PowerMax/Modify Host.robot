@@ -1,0 +1,58 @@
+*** Settings ***
+Library    SeleniumLibrary    120
+Library    RequestsLibrary
+Resource    ../Keywords_common.robot
+Library    ../custom_defined_keywords_common.py
+Variables    ../../PageObjects/PowerMax/modify_hostpo.py
+
+*** Variables ***
+&{headers}  Content-Type=application/json  Accpet=application/json    
+@{auth}    root    vRO4Life!
+
+*** Keywords ***
+Workflow Modify Host Basic
+    [Arguments]    &{modify_host_data}
+    Sleep    10
+    Click Element    xpath=//a[text()="Host Information"]
+    Sleep    10
+    Wait Until Element Is Visible    id=input_actionType
+    Select From List By Label    id=input_actionType    ${modify_host_data.the_action_that_needs_to_be_performed}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_host
+    Select From List By Label    id=input_host    ${modify_host_data.the_host}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_newName
+    Input Text    id=input_newName    ${modify_host_data.new_host_name}
+    Click Element    xpath=//a[text()=""]
+    Sleep    10
+    Wait Until Element Is Visible    id=input_avoidResetBroadcast
+    Select From List By Label    id=input_avoidResetBroadcast    ${modify_host_data.avoid_reset_broadcast}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_volumeSetAddressing
+    Select From List By Label    id=input_volumeSetAddressing    ${modify_host_data.volume_set_addressing}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_spc2ProtocolVersion
+    Select From List By Label    id=input_spc2ProtocolVersion    ${modify_host_data.spc2_protocol_version}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_scsi3
+    Select From List By Label    id=input_scsi3    ${modify_host_data.scsi3}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_scsiSupport1
+    Select From List By Label    id=input_scsiSupport1    ${modify_host_data.scsi_support1}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_disableQResetOnUa
+    Select From List By Label    id=input_disableQResetOnUa    ${modify_host_data.disable_q_reset_on_ua}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_environSet
+    Select From List By Label    id=input_environSet    ${modify_host_data.environ_set}
+    Sleep    10
+    Wait Until Element Is Visible    id=input_openVms
+    Select From List By Label    id=input_openVms    ${modify_host_data.open_vms}
+    Sleep    10
+    Run Keyword If    ${modify_host_data.consistent_lun} == True    Click Element    xpath=//label[@for="input_consistentLun"]
+    No Errors
+    Click Button    id=${powerscale_create_smb_share_po['run_button_id']}
+    Wait Until Element Is Visible    xpath=//div[@id='wfStatusInfo']//span
+    Wait Until Element Does Not Contain    xpath=//div[@id='wfStatusInfo']//span    Running
+    ${status}    Get Text    xpath=//div[@id='wfStatusInfo']//span
+    [Return]    ${status}

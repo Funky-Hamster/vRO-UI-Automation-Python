@@ -111,19 +111,25 @@ class CodeGenerator:
             file_handle.write('powerscale_modify_smb_share_inventory_config = ')
             file_handle.write(str(inventory_config_data).replace("'$$##", "").replace("$$##'", "").replace("@", ""))
     
-    def generate_robots(self, platform: str = 'PowerScale'):
-        resources = ['SMB Share']
-        for resource in resources:
-            self.generate_robot(resource=resource, workflow='Get ' + resource)
-            self.generate_robot(resource=resource, workflow='Create ' + resource)
-            self.generate_robot(resource=resource, workflow='Modify ' + resource)
-            self.generate_robot(resource=resource, workflow='Delete ' + resource)
+    def generate_robots(self, platform: str='PowerMax'):
+        # resources = ['SMB Share']
+        # for resource in resources:
+        #     self.generate_robot(resource=resource, workflow='Get ' + resource)
+        #     self.generate_robot(resource=resource, workflow='Create ' + resource)
+        #     self.generate_robot(resource=resource, workflow='Modify ' + resource)
+        #     self.generate_robot(resource=resource, workflow='Delete ' + resource)
+        f = open(platform + ' Workflows.json')
+        self.workflow_data = json.load(f)
+        f.close()
+        workflows = self.workflow_data['workflows']
+        for workflow in workflows:
+            self.generate_robot(platform=platform, workflow=workflow['name'])
         return
 
     def generate_robot(self, platform: str = 'PowerScale', resource: str = 'SMB Share', workflow: str = 'Modify SMB Share', username: str = 'root', password: str = 'vRO4Life!'):
         # generate workflow robot
         snake_case_workflow = workflow.strip().replace(" ", "_").lower()
-        with open('robots/' + workflow + '.robot', 'w') as file_handle:
+        with open('robots/' + platform + '/' + workflow + '.robot', 'w') as file_handle:
             file_handle.write('*** Settings ***\n')
             file_handle.write('Library    SeleniumLibrary    120\n')
             file_handle.write('Library    RequestsLibrary\n')
@@ -184,7 +190,7 @@ class CodeGenerator:
             file_handle.write('    [Return]    ${status}\n')
 
             # generate validation for the inventory
-            plugin_name = 'Dell EMC ' + platform
+            '''plugin_name = 'Dell EMC ' + platform
             file_handle.write('\n')
             file_handle.write('Validate Workflow ' + workflow + ' Basic\n')
             inventory_item = snake_case_workflow + '_inventory_item'
@@ -212,15 +218,18 @@ class CodeGenerator:
                 title = item['title']
                 if self.inventory_to_workflow_data_title.__contains__(title):
                     file_handle.write('    ${' + title + '}    Get Text  xpath=//th[text()="' + title + '"]/following-sibling::td\n')
-                    file_handle.write('    Should Be Equal    ${' + title + '}    ${' + data + '.' + self.inventory_to_workflow_data_title[title] + '}\n')
+                    file_handle.write('    Should Be Equal    ${' + title + '}    ${' + data + '.' + self.inventory_to_workflow_data_title[title] + '}\n')'''
 
-    def generate_test_case_basic_data_format(self, platform: str = 'PowerScale'):
+    def generate_test_case_basic_data_format(self, platform: str = 'PowerMax'):
+        f = open(platform + ' Workflows' + '.json')
+        self.workflow_data = json.load(f)
+        f.close()
         workflows = self.workflow_data['workflows']
         for workflow in workflows:
             snake_case_workflow = workflow['name'].strip().replace(" ", "_").lower()
             data = snake_case_workflow + '_data'
             tabs = workflow['content']['tabs']
-            with open('test_cases/' + snake_case_workflow + '_data.py', 'w') as file_handle:
+            with open('test_cases/' + platform + '/' + snake_case_workflow + '_data.py', 'w') as file_handle:
                 file_handle.write(snake_case_workflow + '_data = {\n')
                 
                 # Wait for each element and make selection or input
@@ -234,12 +243,12 @@ class CodeGenerator:
                 file_handle.write('}')
         return 
 
-    def generate_config_vars(self, platform = 'PowerScale'):
-        f = open('PowerScale Workflows' + '.json')
+    def generate_config_vars(self, platform = 'PowerMax'):
+        f = open(platform + ' Workflows' + '.json')
         self.workflow_data = json.load(f)
         f.close()
         distinct_dict = dict()
-        with open('config_vars/' + platform.lower() + '_config.py', 'w') as file_handle:
+        with open('config_vars/' + platform + '/' + platform.lower() + '_config.py', 'w') as file_handle:
             workflows = self.workflow_data['workflows']
             for workflow in workflows:
                 tabs = workflow['content']['tabs']

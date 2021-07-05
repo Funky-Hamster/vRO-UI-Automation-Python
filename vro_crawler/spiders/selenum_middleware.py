@@ -54,7 +54,7 @@ class SeleniumMiddleware(object):
 
         self.browser: webdriver
 
-    def fetch_workflows(self, request, browser, platform='PowerMax'):
+    def fetch_workflows(self, request, browser: webdriver, platform='PowerStore'):
         self.explicit_wait = WebDriverWait(browser, 120)
         self.browser = browser
         self.browser.get(request.url)
@@ -106,6 +106,8 @@ class SeleniumMiddleware(object):
                 workflow_name = chosen_workflow_node.text
                 if workflow_name.find('List') != -1:
                     continue
+                if workflow_name.find('Clusters') != -1:
+                    continue
                 self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_loading_center_spinner))
                 time.sleep(2)
                 self.browser.find_element(*self.workflow_run_button).click()
@@ -140,7 +142,7 @@ class SeleniumMiddleware(object):
         self.dict_to_json_write_file(workflow_struct, platform + ' Workflows')
         return HtmlResponse(url=self.browser.current_url, body=workflow_content.get_attribute("outerHTML"), encoding="utf-8", request=request)
 
-    def fetch_workflows_in_tree(self, request, browser, platform='PowerMax'):
+    def fetch_workflows_in_tree(self, request, browser: webdriver, platform='PowerStore'):
         self.explicit_wait = WebDriverWait(browser, 120)
         self.browser = browser
         self.browser.get(request.url)
@@ -251,7 +253,7 @@ class SeleniumMiddleware(object):
         with open(name + '.json', 'w') as f:
             json.dump(dict, f)
 
-    def fetch_inventory(self, request, browser):
+    def fetch_inventory(self, request, browser: webdriver, workflow='PowerScale'):
         self.browser = browser
         self.explicit_wait = WebDriverWait(self.browser, 120)
         self.browser.get(request.url)
@@ -269,7 +271,7 @@ class SeleniumMiddleware(object):
         inventories = []
         plugin_name = "test"
         for ele in eles:
-            if (ele.text.find("PowerScale") != -1):
+            if (ele.text.find(workflow) != -1):
                 ele.find_element(*self.expand_btn).click()
                 self.explicit_wait.until_not(EC.visibility_of_element_located(self.vro_inventory_loading_spinner))
                 powerscale_node = ele

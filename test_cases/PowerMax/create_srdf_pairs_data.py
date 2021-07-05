@@ -1,0 +1,16 @@
+create_srdf_pairs_data = {
+    'powermax_array': POWERMAX_POWER_MAX_ARRAY,
+    'rdf_group_on_the_array': POWERMAX_RDF_GROUP,
+    'srdf_replication_mode': POWERMAX_REPLICATION_MODE,
+    'rdf_type': POWERMAX_RDF_TYPE,
+    'new_volume_pairs?': POWERMAX_NEW_VOLUME_PAIRS,
+    'number_of_pairs_to_be_created': POWERMAX_NUMBER_OF_PAIRS,
+    'capacity_unit_in_cyl/mb/gb/tb': POWERMAX_CAPACITY_UNIT,
+    'size_of_each_volume': POWERMAX_VOLUME_SIZE,
+    'invalidate_r1_flag:_invalidate_the_r1_volume_as_part_of_the_pair_creation': POWERMAX_INVALIDATE_R1,
+    'invalidate_r2_flag:_invalidate_the_r2_volume_as_part_of_the_pair_creation': POWERMAX_INVALIDATE_R2,
+    'establish_flag:_perform_an_srdf_esablish_after_the_pairs_are_created': POWERMAX_ESTABLISH,
+    'format_flag:_no_data_synchronization_is_done_between_source_and_target_dynamic_srdf_pairs_after_all_tracks_are_cleared_on_what_will_become_the_r1_and_r2_side': POWERMAX_FORMAT,
+    'exempt_flag:_allows_volumes_to_be_added,_removed,_or_suspended_without_affecting_the_state_of_the_srdf/a_or_srdf/metro_session_or_requiring_that_other_volumes_in_the_session_be_suspended._used_for_an_srdf_group_supporting_an_active_srdf/a_session_or_an_active_srdf/metro_session': POWERMAX_EXEMPT,
+    'metro_bias_flag:_when_rdf_mode_is_set_to_active,_this_flag_specifies_to_use_bias_when_creating_an_srdf_metro_pair._if_set_to_false,_witness_will_be_used.': POWERMAX_METRO_BIAS,
+}

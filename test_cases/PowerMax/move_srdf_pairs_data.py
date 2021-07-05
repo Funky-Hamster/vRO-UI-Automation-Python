@@ -1,0 +1,11 @@
+move_srdf_pairs_data = {
+    'powermax_array': POWERMAX_POWER_MAX_ARRAY,
+    'the_rdf_group_on_the_array': POWERMAX_RDF_GROUP,
+    'the_target_rdf_group_that_the_pairs_will_be_moved_to': POWERMAX_TARGET_RDF_GROUP,
+    'rdf_pairs_to_move': POWERMAX_RDF_PAIRS_TO_MOVE,
+    'half_move_flag:_moves_one_side_of_the_dynamic_srdf_pair_from_one_srdf_group_to_another_srdf_group.': POWERMAX_HALF_MOVE,
+    'bypass_flag:_bypasses_any_existing_powermax_exclusive_locks_during_an_srdf_operation._warning:_only_use_this_flag_if_you_are_certain_no_other_srdf_operation_is_in_progress_at_the_local_and/or_remote_powermax_arrays': POWERMAX_BYPASS,
+    'exempt_flag:__allows_volumes_to_be_added,_removed,_or_suspended_without_affecting_the_state_of_the_srdf/a_or_srdf/metro_session_or_requiring_that_other_volumes_in_the_session_be_suspended._used_for_an_srdf_group_supporting_an_active_srdf/a_session_or_an_active_srdf/metro_session': POWERMAX_EXEMPT,
+    'keep_r1_flag:_sets_the_winner_side_of_the_srdf/metro_group_to_the_r1_or_the_r2_side,_as_specified._this_option_can_be_used_when_moving_volumes_out_of_the_srdf/metro_group_but_not_when_moving_volumes_into_the_group.': POWERMAX_KEEP_R1,
+    'keep_r2_flag:_sets_the_winner_side_of_the_srdf/metro_group_to_the_r1_or_the_r2_side,_as_specified._this_option_can_be_used_when_moving_volumes_out_of_the_srdf/metro_group_but_not_when_moving_volumes_into_the_group.': POWERMAX_KEEP_R2,
+}

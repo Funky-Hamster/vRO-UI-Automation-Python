@@ -18,18 +18,17 @@ class QuotesSpider(scrapy.Spider):
         # session = vshere_obj.vsphere_login('10.225.6.65', 'Administrator@vsphere.local', 'Password123!')
         url = 'https://vro1171.pie.lab.emc.com/orchestration-ui/#/workflow?query=@tags:Dell_EMC'
         request = scrapy.Request(url=url)
-        selenium_middleware_obj = SeleniumMiddleware()
-        # save the fetching step for POC
-        response = selenium_middleware_obj.fetch_workflows_in_tree(request, self.browser)
+        # selenium_middleware_obj = SeleniumMiddleware()
+        # response = selenium_middleware_obj.fetch_workflows_in_tree(request, self.browser)
         # fetch the data in the inventory
         # url = 'https://vpi163.pie.lab.emc.com/orchestration-ui/#/inventory'
         # request = scrapy.Request(url=url)
         # response = selenium_middleware_obj.fetch_inventory(request, self.browser)
-        # code_generator_obj = CodeGenerator()
-        # code_generator_obj.generate_robots()
-        # code_generator_obj.generate_test_case_basic_data_format()
-        # code_generator_obj.generate_config_vars()
-        self.parse(response)
+        code_generator_obj = CodeGenerator()
+        code_generator_obj.generate_robots()
+        code_generator_obj.generate_test_case_basic_data_format()
+        code_generator_obj.generate_config_vars()
+        # self.parse(response)
 
         # yield request
     # def start_requests(self):
